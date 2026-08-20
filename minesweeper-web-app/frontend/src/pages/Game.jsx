@@ -16,6 +16,7 @@ function Game() {
     hintCell,
     minesRemaining,
     score,
+    saveStatus,
     changeDifficulty,
     restart,
     revealCellAt,
@@ -56,6 +57,7 @@ function Game() {
         score={score}
         timeElapsed={timeElapsed}
         hintsUsed={hintsUsed}
+        saveStatus={saveStatus}
         onRestart={restart}
       />
     </div>
