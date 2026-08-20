@@ -32,6 +32,7 @@
 .game-stats {
   display: flex;
   gap: 1.5rem;
+  flex-wrap: wrap;
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
 }
@@ -103,6 +104,20 @@
 .cell-number-7 { color: #000; }
 .cell-number-8 { color: #757575; }
 
+/* Temporary hint highlight — a hint only POINTS at a cell, it never
+   reveals it, so this has to stay visually distinct from both the
+   hidden and revealed states. Pulses so it's easy to spot on a big
+   16x16 board. */
+.cell-hint {
+  animation: hint-pulse 1s ease-in-out infinite;
+  box-shadow: 0 0 0 3px #ffb300 inset;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { background-color: #fff59d; }
+  50% { background-color: #ffe082; }
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -118,6 +133,11 @@
   border-radius: 8px;
   text-align: center;
   min-width: 240px;
+}
+
+.modal-stat {
+  margin: 0.25rem 0;
+  font-size: 1.05rem;
 }
 
 .modal button {

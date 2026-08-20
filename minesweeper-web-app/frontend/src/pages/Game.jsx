@@ -1,5 +1,5 @@
 import { useMinesweeper } from "../hooks/useMinesweeper";
-import { DIFFICULTIES } from "../utils/minesweeper";
+import { DIFFICULTIES, MAX_HINTS } from "../utils/minesweeper";
 import DifficultySelector from "../components/DifficultySelector";
 import GameHeader from "../components/GameHeader";
 import MinesweeperBoard from "../components/MinesweeperBoard";
@@ -12,6 +12,8 @@ function Game() {
     board,
     gameStatus,
     timeElapsed,
+    hintsUsed,
+    hintCell,
     minesRemaining,
     score,
     changeDifficulty,
@@ -20,6 +22,8 @@ function Game() {
     flagCellAt,
     useHint,
   } = useMinesweeper();
+
+  const hintDisabled = gameStatus !== "playing" || hintsUsed >= MAX_HINTS;
 
   return (
     <div className="page">
@@ -32,14 +36,17 @@ function Game() {
         minesRemaining={minesRemaining}
         timeElapsed={timeElapsed}
         score={score}
+        hintsUsed={hintsUsed}
+        maxHints={MAX_HINTS}
         onHint={useHint}
         onRestart={restart}
-        hintDisabled={gameStatus !== "playing"}
+        hintDisabled={hintDisabled}
       />
 
       <MinesweeperBoard
         board={board}
         gameStatus={gameStatus}
+        hintCell={hintCell}
         onReveal={revealCellAt}
         onFlag={flagCellAt}
       />
@@ -48,6 +55,7 @@ function Game() {
         gameStatus={gameStatus}
         score={score}
         timeElapsed={timeElapsed}
+        hintsUsed={hintsUsed}
         onRestart={restart}
       />
     </div>

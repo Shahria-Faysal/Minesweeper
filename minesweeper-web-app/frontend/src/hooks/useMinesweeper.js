@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   DIFFICULTIES,
+  MAX_HINTS,
+  HINT_HIGHLIGHT_MS,
   createEmptyBoard,
   placeMines,
   revealCell,
@@ -29,8 +31,13 @@ export function useMinesweeper(initialDifficulty = "beginner") {
   const [gameStatus, setGameStatus] = useState("ready");
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [hintsUsed, setHintsUsed] = useState(0);
+  // The cell a hint most recently pointed at, so the UI can
+  // highlight it — separate from `board`, since a hint does NOT
+  // reveal anything.
+  const [hintCell, setHintCell] = useState(null);
 
   const timerRef = useRef(null);
+  const hintTimeoutRef = useRef(null);
 
   // Timer only ticks while gameStatus === "playing". Cleans itself
   // up whenever gameStatus changes (including to won/lost) or the
@@ -44,10 +51,22 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     return () => clearInterval(timerRef.current);
   }, [gameStatus]);
 
+  // Clear any pending hint-highlight timeout on unmount.
+  useEffect(() => {
+    return () => clearTimeout(hintTimeoutRef.current);
+  }, []);
+
+  function clearHintHighlight() {
+    clearTimeout(hintTimeoutRef.current);
+    setHintCell(null);
+  }
+
   const resetGame = useCallback((nextDifficulty) => {
     const targetDifficulty = nextDifficulty ?? difficulty;
     const targetConfig = DIFFICULTIES[targetDifficulty];
 
+    clearTimeout(hintTimeoutRef.current);
+    setHintCell(null);
     setDifficulty(targetDifficulty);
     setBoard(createEmptyBoard(targetConfig.rows, targetConfig.cols));
     setGameStatus("ready");
@@ -61,6 +80,9 @@ export function useMinesweeper(initialDifficulty = "beginner") {
 
     const targetCell = board[row][col];
     if (targetCell.isRevealed || targetCell.isFlagged) return;
+
+    // Any real reveal makes a stale hint highlight pointless.
+    clearHintHighlight();
 
     let workingBoard = board;
 
@@ -90,24 +112,34 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     setBoard((prevBoard) => toggleFlag(prevBoard, row, col));
   }
 
+  /**
+   * Points out a safe cell WITHOUT revealing it: picks a random
+   * hidden, unflagged, non-mine cell and stores it as `hintCell` so
+   * the board can highlight it. The highlight clears itself after
+   * HINT_HIGHLIGHT_MS, or immediately if the player reveals any
+   * cell first. Capped at MAX_HINTS per game; each use costs
+   * HINT_COST points (applied via calculateScore below).
+   */
   function useHint() {
     if (gameStatus !== "playing") return;
+    if (hintsUsed >= MAX_HINTS) return;
 
-    const hintCell = findHintCell(board);
-    if (!hintCell) return;
+    const cell = findHintCell(board);
+    if (!cell) return;
 
-    const nextBoard = revealCell(board, hintCell.row, hintCell.col);
-    setBoard(nextBoard);
+    clearTimeout(hintTimeoutRef.current);
+    setHintCell({ row: cell.row, col: cell.col });
     setHintsUsed((count) => count + 1);
 
-    if (checkWin(nextBoard)) {
-      setGameStatus("won");
-    }
+    hintTimeoutRef.current = setTimeout(() => {
+      setHintCell(null);
+    }, HINT_HIGHLIGHT_MS);
   }
 
   const flagCount = countFlags(board);
   const minesRemaining = config.mines - flagCount;
   const score = calculateScore(timeElapsed, hintsUsed);
+  const hintsRemaining = MAX_HINTS - hintsUsed;
 
   return {
     difficulty,
@@ -116,6 +148,8 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     gameStatus,
     timeElapsed,
     hintsUsed,
+    hintsRemaining,
+    hintCell,
     minesRemaining,
     score,
     changeDifficulty: resetGame,

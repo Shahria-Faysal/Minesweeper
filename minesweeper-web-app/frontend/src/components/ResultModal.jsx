@@ -1,4 +1,4 @@
-function ResultModal({ gameStatus, score, timeElapsed, onRestart }) {
+function ResultModal({ gameStatus, score, timeElapsed, hintsUsed, onRestart }) {
   const isOver = gameStatus === "won" || gameStatus === "lost";
   if (!isOver) return null;
 
@@ -7,11 +7,14 @@ function ResultModal({ gameStatus, score, timeElapsed, onRestart }) {
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h2>{isWin ? "You Win! 🎉" : "Game Over 💥"}</h2>
-        <p>Time: {timeElapsed}s</p>
-        <p>Score: {score}</p>
+        <h2>{isWin ? "🎉 You Won!" : "💣 Game Over"}</h2>
+
+        <p className="modal-stat">Score: {score}</p>
+        <p className="modal-stat">Time: {timeElapsed} seconds</p>
+        {isWin && <p className="modal-stat">Hints Used: {hintsUsed}</p>}
+
         <button type="button" onClick={onRestart}>
-          Play Again
+          {isWin ? "Play Again" : "Try Again"}
         </button>
       </div>
     </div>

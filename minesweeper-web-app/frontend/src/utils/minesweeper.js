@@ -8,6 +8,10 @@ export const DIFFICULTIES = {
   advanced: { label: "Advanced", rows: 16, cols: 16, mines: 40 },
 };
 
+export const MAX_HINTS = 3;
+export const HINT_COST = 50;
+export const HINT_HIGHLIGHT_MS = 3000;
+
 /**
  * Builds a rows x cols grid of empty cells. No mines yet — mines are
  * placed later, on the first click (see placeMines below).
@@ -182,8 +186,8 @@ export function findHintCell(board) {
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
-// Score = 1000 - (time in seconds x 5) - (hints used x 50), floored at 0.
+// Score = 1000 - (time in seconds x 5) - (hints used x HINT_COST), floored at 0.
 export function calculateScore(timeElapsed, hintsUsed) {
-  const rawScore = 1000 - timeElapsed * 5 - hintsUsed * 50;
+  const rawScore = 1000 - timeElapsed * 5 - hintsUsed * HINT_COST;
   return Math.max(0, rawScore);
 }

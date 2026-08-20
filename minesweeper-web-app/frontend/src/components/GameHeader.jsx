@@ -9,6 +9,8 @@ function GameHeader({
   minesRemaining,
   timeElapsed,
   score,
+  hintsUsed,
+  maxHints,
   onHint,
   onRestart,
   hintDisabled,
@@ -19,13 +21,16 @@ function GameHeader({
 
       <div className="game-stats">
         <span>💣 Mines: {minesRemaining}</span>
-        <span>⏱ Time: {formatTime(timeElapsed)}</span>
+        <span>⏱ {formatTime(timeElapsed)}</span>
         <span>🏆 Score: {score}</span>
+        <span>
+          💡 Hints: {hintsUsed}/{maxHints}
+        </span>
       </div>
 
       <div className="game-actions">
         <button type="button" onClick={onHint} disabled={hintDisabled}>
-          Hint
+          💡 Hint
         </button>
         <button type="button" onClick={onRestart}>
           Restart
