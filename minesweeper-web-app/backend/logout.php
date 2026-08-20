@@ -1,17 +1,31 @@
 <?php
 /**
- * Logout
- *
- * Endpoint: logout.php
- * This is a placeholder for Phase 1. The actual logic (validation,
- * queries, sessions, etc.) will be implemented in a later phase.
+ * POST /logout.php
+ * Destroys the current PHP session (server-side data + the cookie).
  */
 
-header('Content-Type: application/json');
+require_once __DIR__ . '/config/cors.php';
 
-// require_once __DIR__ . '/config/db.php';
+// Clear all session data.
+$_SESSION = [];
+
+// Also expire the session cookie itself in the browser.
+if (ini_get('session.use_cookies')) {
+    $params = session_get_cookie_params();
+    setcookie(
+        session_name(),
+        '',
+        time() - 42000,
+        $params['path'],
+        $params['domain'],
+        $params['secure'],
+        $params['httponly']
+    );
+}
+
+session_destroy();
 
 echo json_encode([
-    'success' => false,
-    'message' => 'Logout endpoint not implemented yet (Phase 1 placeholder).',
+    'success' => true,
+    'message' => 'Logged out successfully',
 ]);
