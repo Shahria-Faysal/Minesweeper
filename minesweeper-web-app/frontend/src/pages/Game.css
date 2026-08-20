@@ -1,0 +1,132 @@
+.difficulty-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.difficulty-selector button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.difficulty-selector .difficulty-active {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+.game-header {
+  margin-bottom: 1rem;
+}
+
+.difficulty-label {
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.game-stats {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.game-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.game-actions button {
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.game-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.board {
+  display: grid;
+  gap: 2px;
+  width: fit-content;
+  border: 2px solid #666;
+  background: #666;
+}
+
+.cell {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.cell-hidden {
+  background: #c0c0c0;
+}
+
+.cell-hidden:hover {
+  background: #d0d0d0;
+}
+
+.cell-revealed {
+  background: #e8e8e8;
+  cursor: default;
+}
+
+.cell-mine {
+  background: #ff6b6b;
+}
+
+.cell-number-1 { color: #1565c0; }
+.cell-number-2 { color: #2e7d32; }
+.cell-number-3 { color: #c62828; }
+.cell-number-4 { color: #6a1b9a; }
+.cell-number-5 { color: #ff8f00; }
+.cell-number-6 { color: #00838f; }
+.cell-number-7 { color: #000; }
+.cell-number-8 { color: #757575; }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 240px;
+}
+
+.modal button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}

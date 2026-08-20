@@ -7,25 +7,29 @@ Project skeleton: React (Vite) frontend + Plain PHP backend + MySQL.
 minesweeper-web-app/
 ├── frontend/
 │   └── src/
-│       ├── context/AuthContext.jsx   frontend "who's logged in" state (Phase 3)
-│       ├── hooks/useAuth.js           hook to read/update auth state (Phase 3)
+│       ├── utils/minesweeper.js       pure game logic — no React (Phase 4)
+│       ├── hooks/
+│       │   ├── useAuth.js
+│       │   └── useMinesweeper.js       game state + actions (Phase 4)
+│       ├── context/AuthContext.jsx
 │       ├── components/
-│       │   ├── Navbar.jsx             auth-aware nav + logout (Phase 3)
-│       │   └── ProtectedRoute.jsx     redirects guests to Login (Phase 3)
+│       │   ├── Navbar.jsx
+│       │   ├── ProtectedRoute.jsx
+│       │   ├── Cell.jsx                one board square (Phase 4)
+│       │   ├── MinesweeperBoard.jsx     grid of Cells (Phase 4)
+│       │   ├── GameHeader.jsx           mines/timer/score + buttons (Phase 4)
+│       │   ├── DifficultySelector.jsx   Beginner/Advanced picker (Phase 4)
+│       │   └── ResultModal.jsx          win/lose popup (Phase 4)
 │       ├── pages/
-│       │   ├── Login.jsx              real form, wired to backend (Phase 3)
-│       │   ├── Register.jsx           real form, wired to backend (Phase 3)
-│       │   └── Dashboard/Game/Leaderboard/History/Profile  placeholders, now protected
+│       │   ├── Login.jsx / Register.jsx
+│       │   ├── Game.jsx + Game.css      full Minesweeper page (Phase 4)
+│       │   └── Dashboard/Leaderboard/History/Profile  still placeholders
 │       └── services/
-│           ├── api.js                 API_BASE_URL + shared fetch helper
-│           └── authService.js         registerUser / loginUser / logoutUser
+│           ├── api.js
+│           └── authService.js
 ├── backend/            PHP API (goes inside XAMPP htdocs)
-│   └── config/
-│       ├── db.php       PDO connection
-│       ├── cors.php      CORS headers + session bootstrap (Phase 2)
-│       └── auth.php      require_login() / current_user_id() (Phase 2)
 ├── database/
-│   └── schema.sql       Run this in phpMyAdmin to create the DB
+│   └── schema.sql
 └── README.md
 ```
 
@@ -33,9 +37,13 @@ minesweeper-web-app/
 - **Phase 1** — project structure, routing, database schema. Done.
 - **Phase 2** — authentication backend (register / login / logout,
   sessions, CORS). Done.
-- **Phase 3** — React authentication UI: Login/Register forms,
-  logout, protected routes, auth-aware navbar. Done. Minesweeper
-  gameplay itself is still a placeholder page.
+- **Phase 3** — React authentication UI: forms, logout, protected
+  routes, auth-aware navbar. Done.
+- **Phase 4** — full Minesweeper game in React (Beginner 9×9/10 mines,
+  Advanced 16×16/40 mines): mine placement with first-click safety,
+  flood-fill reveal, flagging, win/lose detection, timer, live score,
+  hint system, restart, difficulty switch. Done. Score is frontend-only
+  for now — nothing is saved to MySQL yet.
 
 **Before running:** open `frontend/src/services/api.js` and set
 `API_BASE_URL` to wherever you put the `backend/` folder in htdocs.
