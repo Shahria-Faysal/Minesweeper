@@ -140,6 +140,13 @@
   font-size: 1.05rem;
 }
 
+.modal-new-best {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #f57f17;
+  margin: 0 0 0.5rem;
+}
+
 .modal-save-status {
   margin: 0.75rem 0 0;
   font-size: 0.85rem;

@@ -1,4 +1,4 @@
-import { apiPost } from "./api";
+import { apiPost, apiGet } from "./api";
 
 /**
  * Sends a finished game's result to the backend.
@@ -16,4 +16,20 @@ export function saveGameResult({ difficulty, score, timeTaken, result, hintsUsed
     result,
     hints_used: hintsUsed,
   });
+}
+
+// difficulty: "all" | "beginner" | "advanced"
+export function fetchLeaderboard(difficulty = "all") {
+  return apiGet("leaderboard.php", { difficulty });
+}
+
+// Always the logged-in user's own games — the backend ignores any
+// user id and reads $_SESSION['user_id'] instead.
+export function fetchHistory() {
+  return apiGet("history.php");
+}
+
+// difficulty: "all" | "beginner" | "advanced"
+export function fetchStats(difficulty = "all") {
+  return apiGet("stats.php", { difficulty });
 }

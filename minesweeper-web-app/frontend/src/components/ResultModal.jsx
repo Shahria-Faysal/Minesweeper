@@ -4,7 +4,15 @@ const SAVE_STATUS_TEXT = {
   error: "Couldn't save result — check your connection.",
 };
 
-function ResultModal({ gameStatus, score, timeElapsed, hintsUsed, saveStatus, onRestart }) {
+function ResultModal({
+  gameStatus,
+  score,
+  timeElapsed,
+  hintsUsed,
+  saveStatus,
+  isNewBest,
+  onRestart,
+}) {
   const isOver = gameStatus === "won" || gameStatus === "lost";
   if (!isOver) return null;
 
@@ -15,6 +23,8 @@ function ResultModal({ gameStatus, score, timeElapsed, hintsUsed, saveStatus, on
     <div className="modal-overlay">
       <div className="modal">
         <h2>{isWin ? "🎉 You Won!" : "💣 Game Over"}</h2>
+
+        {isWin && isNewBest && <p className="modal-new-best">🎉 NEW PERSONAL BEST!</p>}
 
         <p className="modal-stat">Score: {score}</p>
         <p className="modal-stat">Time: {timeElapsed} seconds</p>
