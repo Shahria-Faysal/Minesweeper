@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { fetchStats } from "../services/gameService";
+import FilterBar from "../components/FilterBar";
 import "../styles/tables.css";
 
 const FILTERS = [
@@ -50,27 +52,23 @@ function Dashboard() {
 
   return (
     <div className="page">
-      <h1>Dashboard</h1>
-      <p>Welcome, {user.username}.</p>
-
-      <div className="filter-bar">
-        {FILTERS.map((f) => (
-          <button
-            key={f.key}
-            type="button"
-            className={filter === f.key ? "filter-active" : ""}
-            onClick={() => handleFilterChange(f.key)}
-          >
-            {f.label}
-          </button>
-        ))}
+      <div className="dashboard-header">
+        <div>
+          <h1>Welcome, {user.username}</h1>
+          <p className="dashboard-subtitle">Here's how your Minesweeper games are going.</p>
+        </div>
+        <Link to="/game" className="btn btn-primary">
+          Play Minesweeper
+        </Link>
       </div>
+
+      <FilterBar options={FILTERS} active={filter} onChange={handleFilterChange} />
 
       {status === "loading" && <p className="loading-state">Loading your stats...</p>}
       {status === "error" && <p className="error-state">Couldn't load your stats.</p>}
 
       {status === "ready" && stats && stats.gamesPlayed === 0 && (
-        <p className="empty-state">No games played yet for this difficulty.</p>
+        <p className="empty-state">No games played yet for this difficulty — go play one!</p>
       )}
 
       {status === "ready" && stats && stats.gamesPlayed > 0 && (

@@ -69,7 +69,7 @@ function Login() {
 
         {error && <p className="form-error">{error}</p>}
 
-        <button type="submit" disabled={isSubmitting}>
+        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
           {isSubmitting ? "Logging in..." : "Login"}
         </button>
       </form>

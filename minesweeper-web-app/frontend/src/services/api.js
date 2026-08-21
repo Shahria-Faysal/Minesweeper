@@ -1,7 +1,8 @@
 // Base URL of the PHP backend.
-// Update this to wherever you placed the `backend/` folder inside
-// your XAMPP htdocs — e.g. "http://localhost/minesweeper-web-app/backend".
-export const API_BASE_URL = "http://localhost/backend";
+// Configurable via VITE_API_BASE_URL in a .env file (copy
+// .env.example to .env and adjust) — falls back to the default
+// XAMPP layout if no .env is present, so nothing breaks out of the box.
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost/backend";
 
 /**
  * Shared fetch wrapper for talking to the PHP API.

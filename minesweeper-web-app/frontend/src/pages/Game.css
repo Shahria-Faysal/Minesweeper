@@ -5,21 +5,6 @@
   flex-wrap: wrap;
 }
 
-.difficulty-selector button {
-  padding: 0.4rem 0.8rem;
-  border: 1px solid #999;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-  font: inherit;
-}
-
-.difficulty-selector .difficulty-active {
-  background: #333;
-  color: #fff;
-  border-color: #333;
-}
-
 .game-header {
   margin-bottom: 1rem;
 }
@@ -40,38 +25,33 @@
 .game-actions {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.game-actions button {
-  padding: 0.4rem 0.9rem;
-  border: none;
-  border-radius: 4px;
-  background: #333;
-  color: #fff;
-  cursor: pointer;
-  font: inherit;
-}
-
-.game-actions button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* ---------------------------------------------------------------
+   Board — sized entirely off CSS variables so it can shrink on
+   small screens without any JS involvement. --board-cols is set
+   per-render (it depends on the difficulty); --cell-size is set
+   once here and overridden by the media queries below.
+   --------------------------------------------------------------- */
 .board {
   display: grid;
+  grid-template-columns: repeat(var(--board-cols), var(--cell-size));
   gap: 2px;
   width: fit-content;
-  border: 2px solid #666;
-  background: #666;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 2px solid var(--board-border);
+  background: var(--board-border);
 }
 
 .cell {
-  width: 2rem;
-  height: 2rem;
+  width: var(--cell-size);
+  height: var(--cell-size);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.95rem;
+  font-size: calc(var(--cell-size) * 0.45);
   font-weight: 700;
   border: none;
   padding: 0;
@@ -79,30 +59,30 @@
 }
 
 .cell-hidden {
-  background: #c0c0c0;
+  background: var(--cell-hidden-bg);
 }
 
 .cell-hidden:hover {
-  background: #d0d0d0;
+  background: var(--cell-hidden-hover-bg);
 }
 
 .cell-revealed {
-  background: #e8e8e8;
+  background: var(--cell-revealed-bg);
   cursor: default;
 }
 
 .cell-mine {
-  background: #ff6b6b;
+  background: var(--mine-bg);
 }
 
-.cell-number-1 { color: #1565c0; }
-.cell-number-2 { color: #2e7d32; }
-.cell-number-3 { color: #c62828; }
-.cell-number-4 { color: #6a1b9a; }
-.cell-number-5 { color: #ff8f00; }
-.cell-number-6 { color: #00838f; }
-.cell-number-7 { color: #000; }
-.cell-number-8 { color: #757575; }
+.cell-number-1 { color: var(--num-1); }
+.cell-number-2 { color: var(--num-2); }
+.cell-number-3 { color: var(--num-3); }
+.cell-number-4 { color: var(--num-4); }
+.cell-number-5 { color: var(--num-5); }
+.cell-number-6 { color: var(--num-6); }
+.cell-number-7 { color: var(--num-7); }
+.cell-number-8 { color: var(--num-8); }
 
 /* Temporary hint highlight — a hint only POINTS at a cell, it never
    reveals it, so this has to stay visually distinct from both the
@@ -118,6 +98,23 @@
   50% { background-color: #ffe082; }
 }
 
+/* Smaller boards for small screens — only --cell-size changes;
+   font-size follows automatically via the calc() above. */
+@media (max-width: 600px) {
+  :root {
+    --cell-size: 1.6rem;
+  }
+}
+
+@media (max-width: 400px) {
+  :root {
+    --cell-size: 1.3rem;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Result modal
+   --------------------------------------------------------------- */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -125,14 +122,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 
 .modal {
-  background: #fff;
+  background: var(--surface);
+  border: 1px solid var(--border);
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 10px;
   text-align: center;
-  min-width: 240px;
+  width: min(360px, 100%);
+}
+
+@media (max-width: 400px) {
+  .modal {
+    padding: 1.25rem;
+  }
 }
 
 .modal-stat {
@@ -143,31 +148,27 @@
 .modal-new-best {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #f57f17;
+  color: var(--warning);
   margin: 0 0 0.5rem;
 }
 
 .modal-save-status {
   margin: 0.75rem 0 0;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .modal-save-saved {
-  color: #2e7d32;
+  color: var(--success);
 }
 
 .modal-save-error {
-  color: #c62828;
+  color: var(--danger);
 }
 
-.modal button {
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   margin-top: 1rem;
-  padding: 0.5rem 1.2rem;
-  border: none;
-  border-radius: 4px;
-  background: #333;
-  color: #fff;
-  cursor: pointer;
-  font: inherit;
 }

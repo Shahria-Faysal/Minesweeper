@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMinesweeper } from "../hooks/useMinesweeper";
-import { DIFFICULTIES, MAX_HINTS } from "../utils/minesweeper";
+import { DIFFICULTIES } from "../utils/minesweeper";
 import { fetchStats } from "../services/gameService";
 import DifficultySelector from "../components/DifficultySelector";
 import GameHeader from "../components/GameHeader";
@@ -15,6 +15,7 @@ function Game() {
     gameStatus,
     timeElapsed,
     hintsUsed,
+    hintsRemaining,
     hintCell,
     minesRemaining,
     score,
@@ -26,7 +27,7 @@ function Game() {
     useHint,
   } = useMinesweeper();
 
-  const hintDisabled = gameStatus !== "playing" || hintsUsed >= MAX_HINTS;
+  const hintDisabled = gameStatus !== "playing" || hintsRemaining <= 0;
 
   // The score to beat for THIS difficulty, loaded before the game
   // finishes so a win can be compared against it. null = no wins yet
@@ -87,8 +88,7 @@ function Game() {
         minesRemaining={minesRemaining}
         timeElapsed={timeElapsed}
         score={score}
-        hintsUsed={hintsUsed}
-        maxHints={MAX_HINTS}
+        hintsRemaining={hintsRemaining}
         onHint={useHint}
         onRestart={restart}
         hintDisabled={hintDisabled}

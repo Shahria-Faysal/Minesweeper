@@ -2,51 +2,101 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 1rem;
-  font-family: system-ui, sans-serif;
-  text-align: left;
 }
 
+/* ---------------------------------------------------------------
+   Navbar
+   --------------------------------------------------------------- */
 .navbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+  color: var(--text);
+  margin-right: 0.5rem;
+  white-space: nowrap;
+}
+
+.navbar-links {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #ccc;
 }
 
 .navbar a {
   text-decoration: none;
-  color: #333;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
 .navbar a:hover {
-  text-decoration: underline;
+  color: var(--text);
+}
+
+.navbar a.active {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
 }
 
 .navbar-user {
   font-weight: 600;
-  margin-right: auto;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
-.navbar-logout {
-  background: none;
-  border: 1px solid #999;
-  border-radius: 4px;
-  padding: 0.25rem 0.75rem;
-  cursor: pointer;
-  font: inherit;
+.navbar-logout,
+.theme-toggle {
+  padding: 0.35rem 0.8rem;
 }
 
-.navbar-logout:hover {
-  background: #f0f0f0;
+@media (max-width: 480px) {
+  .navbar {
+    gap: 0.5rem;
+  }
+  .navbar-links {
+    gap: 0.6rem;
+  }
 }
 
+/* ---------------------------------------------------------------
+   Page card — every routed page sits in one of these
+   --------------------------------------------------------------- */
 .page {
-  padding: 1rem 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin: 1rem 0;
 }
 
+@media (max-width: 480px) {
+  .app {
+    padding: 0.5rem;
+  }
+  .page {
+    padding: 1rem;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Auth forms (Login / Register)
+   --------------------------------------------------------------- */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -63,37 +113,28 @@
 
 .auth-form input {
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border);
   border-radius: 4px;
   font: inherit;
-}
-
-.auth-form button {
-  margin-top: 0.5rem;
-  padding: 0.6rem;
-  border: none;
-  border-radius: 4px;
-  background: #333;
-  color: #fff;
-  font: inherit;
-  cursor: pointer;
-}
-
-.auth-form button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.auth-form button:hover:not(:disabled) {
-  background: #111;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .form-error {
-  color: #c62828;
+  color: var(--danger);
   margin: 0;
 }
 
 .form-success {
-  color: #2e7d32;
+  color: var(--success);
   margin: 0 0 0.5rem;
+}
+
+/* ---------------------------------------------------------------
+   Profile
+   --------------------------------------------------------------- */
+.profile-username {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
 }

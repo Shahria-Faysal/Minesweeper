@@ -1,56 +1,75 @@
 # Minesweeper Web Application
 
-Project skeleton: React (Vite) frontend + Plain PHP backend + MySQL.
+React (Vite) frontend + Plain PHP backend + MySQL. All 8 phases complete.
 
 ## Structure
 ```
 minesweeper-web-app/
 ├── frontend/
+│   ├── .env.example                configure API_BASE_URL here (Phase 8)
 │   └── src/
 │       ├── utils/minesweeper.js
-│       ├── hooks/ (useAuth, useMinesweeper)
-│       ├── context/AuthContext.jsx
-│       ├── styles/tables.css           filter bar / table / stat-card styles (Phase 7)
-│       ├── components/ (Navbar, ProtectedRoute, Cell, MinesweeperBoard,
-│       │                GameHeader, DifficultySelector, ResultModal)
+│       ├── hooks/ (useAuth, useMinesweeper, useTheme)
+│       ├── context/ (AuthContext, ThemeContext — dark mode, Phase 8)
+│       ├── styles/tables.css       filter bar / table / stat-card / dashboard-header styles
+│       ├── components/
+│       │   ├── Navbar.jsx           NavLink-based, brand, theme toggle (Phase 8)
+│       │   ├── ThemeToggle.jsx      ☀ Light / 🌙 Dark switch (Phase 8)
+│       │   ├── FilterBar.jsx        shared filter buttons (Phase 8 dedup)
+│       │   ├── ProtectedRoute.jsx
+│       │   ├── Cell.jsx / MinesweeperBoard.jsx   responsive board sizing (Phase 8)
+│       │   ├── GameHeader.jsx       shows Hints Remaining (Phase 8)
+│       │   └── ResultModal.jsx      final win/lose copy + nav buttons (Phase 8)
 │       ├── pages/
 │       │   ├── Login.jsx / Register.jsx
-│       │   ├── Game.jsx + Game.css       now shows 🎉 NEW PERSONAL BEST! (Phase 7)
-│       │   ├── Leaderboard.jsx           top 10 wins, All/Beginner/Advanced filter (Phase 7)
-│       │   ├── History.jsx               logged-in user's own games, newest first (Phase 7)
-│       │   ├── Dashboard.jsx             personal stats + streaks (Phase 7)
-│       │   └── Profile.jsx               still a placeholder
-│       └── services/
-│           ├── api.js                    apiPost + apiGet
-│           ├── authService.js
-│           └── gameService.js            saveGameResult / fetchLeaderboard / fetchHistory / fetchStats
+│       │   ├── Game.jsx + Game.css
+│       │   ├── Leaderboard.jsx / History.jsx
+│       │   ├── Dashboard.jsx        Play Minesweeper CTA (Phase 8)
+│       │   └── Profile.jsx          real content, no longer a placeholder (Phase 8)
+│       └── services/ (api.js, authService.js, gameService.js)
 ├── backend/            PHP API (goes inside XAMPP htdocs)
 │   ├── config/ (db.php, cors.php, auth.php)
 │   ├── register.php / login.php / logout.php
 │   ├── save-score.php
-│   ├── leaderboard.php    implemented — JOIN users+game_results, top 10 wins (Phase 7)
-│   ├── history.php        implemented — session-scoped, newest first (Phase 7)
-│   └── stats.php          implemented — COUNT/SUM/AVG/MAX/MIN + PHP-computed streaks (Phase 7)
+│   └── leaderboard.php / history.php / stats.php
 ├── database/
 │   └── schema.sql
 └── README.md
 ```
 
 ## Progress
-- **Phase 1–6** — project setup, auth (backend + UI), full Minesweeper
-  game (mine placement, flood fill, hints, timer, scoring), and
-  saving finished games to MySQL. All done.
-- **Phase 7** — Leaderboard (top 10 wins, filterable by difficulty),
-  personal History (session-scoped, never trusts a client-supplied
-  user id), and a Dashboard of personal statistics (games played/won/
-  lost, win rate, highest score, best time, average score, current +
-  best win streak, all filterable by difficulty). The Game page now
-  fetches the player's current best for the selected difficulty
-  before the game starts, so a win can show "🎉 NEW PERSONAL BEST!"
-  the moment it happens. Done.
+- **Phase 1–7** — full stack: PHP-session auth, complete Minesweeper
+  game (mine placement, flood fill, hints, timer, scoring), saving
+  results to MySQL, leaderboard, personal history, and statistics.
+  All done.
+- **Phase 8 (final polish)** — done:
+  - **Dark mode**: `ThemeContext` toggles a `data-theme` attribute on
+    `<html>`; every color in the app is a CSS variable in `index.css`
+    keyed off that attribute. Persisted via `localStorage` and
+    defaults to the OS preference on first visit.
+  - **Responsive design**: the board's cell size is a CSS variable
+    (`--cell-size`) overridden at two breakpoints, so the grid shrinks
+    on phones without any JS; long tables scroll horizontally instead
+    of breaking layout; the navbar wraps; stat cards reflow.
+  - **Consistent design**: every page renders inside the same
+    `.page` card, and every button in the app uses one shared
+    `.btn` / `.btn-primary` / `.btn-active` system instead of each
+    page defining its own button CSS.
+  - **Dashboard**: now has a "Play Minesweeper" call-to-action button
+    alongside the existing stats.
+  - **Game UI / result screens**: header now shows Hints *Remaining*;
+    the win/lose modal matches the requested copy exactly and adds
+    "View Statistics" / "Leaderboard" navigation buttons.
+  - **Cleanup**: extracted a shared `FilterBar` component (was
+    duplicated in Leaderboard and Dashboard); `API_BASE_URL` is now
+    configurable via `.env` (see `.env.example`) instead of hardcoded;
+    removed an unused import; confirmed no console errors, no
+    unused imports, and no lint errors project-wide.
 
-**Before running:** open `frontend/src/services/api.js` and set
-`API_BASE_URL` to wherever you put the `backend/` folder in htdocs.
+**Before running:** copy `frontend/.env.example` to `frontend/.env`
+and adjust `VITE_API_BASE_URL` if your `backend/` folder lives
+somewhere other than `http://localhost/backend` in htdocs. If you skip
+this, the app still works — it falls back to that same default.
 
 See the setup instructions provided by Claude in chat for full
 step-by-step installation and testing instructions.

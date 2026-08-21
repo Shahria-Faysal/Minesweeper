@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 const SAVE_STATUS_TEXT = {
   saving: "Saving result...",
   saved: "Result saved ✓",
@@ -13,6 +15,8 @@ function ResultModal({
   isNewBest,
   onRestart,
 }) {
+  const navigate = useNavigate();
+
   const isOver = gameStatus === "won" || gameStatus === "lost";
   if (!isOver) return null;
 
@@ -22,9 +26,9 @@ function ResultModal({
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h2>{isWin ? "🎉 You Won!" : "💣 Game Over"}</h2>
+        <h2>{isWin ? "🎉 YOU WON!" : "💣 GAME OVER"}</h2>
 
-        {isWin && isNewBest && <p className="modal-new-best">🎉 NEW PERSONAL BEST!</p>}
+        {isWin && isNewBest && <p className="modal-new-best">🏆 New Personal Best!</p>}
 
         <p className="modal-stat">Score: {score}</p>
         <p className="modal-stat">Time: {timeElapsed} seconds</p>
@@ -34,9 +38,19 @@ function ResultModal({
           <p className={`modal-save-status modal-save-${saveStatus}`}>{saveStatusText}</p>
         )}
 
-        <button type="button" onClick={onRestart}>
-          {isWin ? "Play Again" : "Try Again"}
-        </button>
+        <div className="modal-actions">
+          <button type="button" className="btn btn-primary" onClick={onRestart}>
+            {isWin ? "Play Again" : "Try Again"}
+          </button>
+          {isWin && (
+            <button type="button" className="btn" onClick={() => navigate("/dashboard")}>
+              View Statistics
+            </button>
+          )}
+          <button type="button" className="btn" onClick={() => navigate("/leaderboard")}>
+            Leaderboard
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -44,34 +44,36 @@ function History() {
       )}
 
       {status === "ready" && history.length > 0 && (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Difficulty</th>
-              <th>Result</th>
-              <th>Score</th>
-              <th>Time</th>
-              <th>Hints Used</th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.map((game) => (
-              <tr key={game.id}>
-                <td>{formatDate(game.playedAt)}</td>
-                <td>{game.difficulty}</td>
-                <td>
-                  <span className={`result-badge result-${game.result}`}>
-                    {game.result === "win" ? "Win" : "Lose"}
-                  </span>
-                </td>
-                <td>{game.score}</td>
-                <td>{game.timeTaken}s</td>
-                <td>{game.hintsUsed}</td>
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Difficulty</th>
+                <th>Result</th>
+                <th>Score</th>
+                <th>Time</th>
+                <th>Hints Used</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {history.map((game) => (
+                <tr key={game.id}>
+                  <td>{formatDate(game.playedAt)}</td>
+                  <td>{game.difficulty}</td>
+                  <td>
+                    <span className={`result-badge result-${game.result}`}>
+                      {game.result === "win" ? "Win" : "Lose"}
+                    </span>
+                  </td>
+                  <td>{game.score}</td>
+                  <td>{game.timeTaken}s</td>
+                  <td>{game.hintsUsed}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

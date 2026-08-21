@@ -4,10 +4,7 @@ function MinesweeperBoard({ board, gameStatus, hintCell, onReveal, onFlag }) {
   const columnCount = board[0].length;
 
   return (
-    <div
-      className="board"
-      style={{ gridTemplateColumns: `repeat(${columnCount}, 2rem)` }}
-    >
+    <div className="board" style={{ "--board-cols": columnCount }}>
       {board.flat().map((cell) => (
         <Cell
           key={`${cell.row}-${cell.col}`}

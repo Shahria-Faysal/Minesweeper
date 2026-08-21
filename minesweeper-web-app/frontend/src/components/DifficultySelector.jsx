@@ -7,7 +7,7 @@ function DifficultySelector({ difficulty, onChange }) {
         <button
           key={key}
           type="button"
-          className={key === difficulty ? "difficulty-active" : ""}
+          className={key === difficulty ? "btn btn-active" : "btn"}
           onClick={() => onChange(key)}
         >
           {config.label} ({config.rows}×{config.cols}, {config.mines} mines)
