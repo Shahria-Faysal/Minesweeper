@@ -31,7 +31,7 @@ if ($difficultyFilter !== 'all' && !in_array($difficultyFilter, $validDifficulti
     exit;
 }
 
-$sql = "SELECT u.username, gr.difficulty, gr.score, gr.time_taken, gr.cells_revealed
+$sql = "SELECT u.username, gr.difficulty, gr.score, gr.time_taken, gr.cells_revealed, gr.hints_used
         FROM game_results gr
         INNER JOIN users u ON gr.user_id = u.id";
 
@@ -58,6 +58,7 @@ foreach ($rows as $row) {
         'score'         => (int) $row['score'],
         'timeTaken'     => (int) $row['time_taken'],
         'cellsRevealed' => (int) $row['cells_revealed'],
+        'hintsUsed'     => (int) $row['hints_used'],
     ];
     $rank++;
 }
