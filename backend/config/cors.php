@@ -20,13 +20,20 @@
 
 // ---- 1 & 2: CORS headers -------------------------------------------------
 
-// Only allow the known React dev server origin. A wildcard ("*") is not
-// allowed by browsers when credentials are involved, and would be an
-// unnecessarily loose policy anyway.
-$allowedOrigin = 'http://localhost:5173';
+// Vite's dev server defaults to port 5173 but falls back to 5174 (or
+// higher) if that port is already taken. We allow both so that a stale
+// process on 5173 doesn't break a second dev tab running on 5174.
+// A wildcard ("*") is NOT allowed by browsers when credentials are
+// involved, so we must echo back the exact requesting origin.
+$allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+];
 
-if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] === $allowedOrigin) {
-    header("Access-Control-Allow-Origin: {$allowedOrigin}");
+$requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($requestOrigin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: {$requestOrigin}");
 }
 
 header('Access-Control-Allow-Credentials: true');
