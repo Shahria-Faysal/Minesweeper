@@ -11,6 +11,8 @@ export const DIFFICULTIES = {
 export const MAX_HINTS = 3;
 export const HINT_COST = 50;
 export const HINT_HIGHLIGHT_MS = 3000;
+export const POINTS_PER_CELL = 10;
+export const POINTS_PER_SECOND = 2;
 
 /**
  * Builds a rows x cols grid of empty cells. No mines yet — mines are
@@ -170,10 +172,14 @@ export function countFlags(board) {
   return board.flat().filter((cell) => cell.isFlagged).length;
 }
 
-// Classic Minesweeper win condition: every cell that ISN'T a mine
-// has been revealed. (You don't have to flag every mine to win.)
-export function checkWin(board) {
-  return board.flat().every((cell) => cell.isMine || cell.isRevealed);
+// There is no win condition — the only way a game ends is by
+// revealing a mine. Score rewards how far you got before that
+// happened (see calculateScore below), not completion.
+
+// Counts revealed, non-mine cells — this is the "progress" half of
+// the score formula.
+export function countRevealedSafeCells(board) {
+  return board.flat().filter((cell) => cell.isRevealed && !cell.isMine).length;
 }
 
 // Picks a random hidden, unflagged, non-mine cell for the Hint
@@ -186,8 +192,10 @@ export function findHintCell(board) {
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
-// Score = 1000 - (time in seconds x 5) - (hints used x HINT_COST), floored at 0.
-export function calculateScore(timeElapsed, hintsUsed) {
-  const rawScore = 1000 - timeElapsed * 5 - hintsUsed * HINT_COST;
+// Score rewards BOTH progress (cells safely revealed) and survival
+// time, minus a penalty per hint used. Floored at 0.
+export function calculateScore(cellsRevealed, timeElapsed, hintsUsed) {
+  const rawScore =
+    cellsRevealed * POINTS_PER_CELL + timeElapsed * POINTS_PER_SECOND - hintsUsed * HINT_COST;
   return Math.max(0, rawScore);
 }

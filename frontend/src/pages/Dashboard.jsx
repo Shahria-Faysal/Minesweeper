@@ -74,17 +74,13 @@ function Dashboard() {
       {status === "ready" && stats && stats.gamesPlayed > 0 && (
         <div className="stats-grid">
           <StatCard label="Games Played" value={stats.gamesPlayed} />
-          <StatCard label="Games Won" value={stats.gamesWon} />
-          <StatCard label="Games Lost" value={stats.gamesLost} />
-          <StatCard label="Win Rate" value={`${stats.winRate}%`} />
           <StatCard label="Highest Score" value={stats.highestScore ?? "—"} />
-          <StatCard
-            label="Best Time"
-            value={stats.bestTime !== null ? `${stats.bestTime}s` : "—"}
-          />
           <StatCard label="Average Score" value={stats.averageScore} />
-          <StatCard label="Current Win Streak" value={stats.currentStreak} />
-          <StatCard label="Best Win Streak" value={stats.bestStreak} />
+          <StatCard
+            label="Longest Survival"
+            value={stats.longestSurvival !== null ? `${stats.longestSurvival}s` : "—"}
+          />
+          <StatCard label="Most Cells Revealed" value={stats.mostCellsRevealed ?? "—"} />
         </div>
       )}
     </div>

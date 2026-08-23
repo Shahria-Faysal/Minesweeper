@@ -46,23 +46,6 @@
   padding: 1rem 0;
 }
 
-.result-badge {
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.result-win {
-  background: var(--success-bg);
-  color: var(--success);
-}
-
-.result-lose {
-  background: var(--danger-bg);
-  color: var(--danger);
-}
-
 /* ---------------------------------------------------------------
    Dashboard header (welcome + Play Minesweeper CTA)
    --------------------------------------------------------------- */

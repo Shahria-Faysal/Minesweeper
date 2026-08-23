@@ -27,17 +27,19 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- ------------------------------------------------------
 -- game_results
--- Stores the outcome of every game a user plays.
+-- Stores every game a user plays. There is no win condition — every
+-- row represents how far a player got (cells revealed, time
+-- survived) before hitting a mine.
 -- ------------------------------------------------------
 CREATE TABLE IF NOT EXISTS game_results (
-    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id     INT UNSIGNED NOT NULL,
-    difficulty  ENUM('beginner', 'advanced') NOT NULL,
-    score       INT UNSIGNED NOT NULL DEFAULT 0,
-    time_taken  INT UNSIGNED NOT NULL COMMENT 'seconds',
-    result      ENUM('win', 'lose') NOT NULL,
-    hints_used  INT UNSIGNED NOT NULL DEFAULT 0,
-    played_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id         INT UNSIGNED NOT NULL,
+    difficulty      ENUM('beginner', 'advanced') NOT NULL,
+    score           INT UNSIGNED NOT NULL DEFAULT 0,
+    time_taken      INT UNSIGNED NOT NULL COMMENT 'seconds',
+    cells_revealed  INT UNSIGNED NOT NULL DEFAULT 0,
+    hints_used      INT UNSIGNED NOT NULL DEFAULT 0,
+    played_at       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_game_results_user
         FOREIGN KEY (user_id) REFERENCES users(id)

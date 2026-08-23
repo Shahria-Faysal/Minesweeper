@@ -18,6 +18,7 @@ function Game() {
     hintsRemaining,
     hintCell,
     minesRemaining,
+    cellsRevealed,
     score,
     saveStatus,
     changeDifficulty,
@@ -30,8 +31,8 @@ function Game() {
   const hintDisabled = gameStatus !== "playing" || hintsRemaining <= 0;
 
   // The score to beat for THIS difficulty, loaded before the game
-  // finishes so a win can be compared against it. null = no wins yet
-  // (or not loaded), which means any win counts as a new best.
+  // finishes so it can be compared against it. null = no games yet
+  // (or not loaded), which means any score counts as a new best.
   const [previousBest, setPreviousBest] = useState(null);
   const [isNewBest, setIsNewBest] = useState(false);
 
@@ -53,12 +54,12 @@ function Game() {
     };
   }, [difficulty]);
 
-  // The instant a game is won, compare its score against the
-  // baseline captured above. This runs once per game (gameStatus
-  // only flips to "won" once), so it correctly compares against the
-  // score as it stood BEFORE this game, not after.
+  // The instant a game ends, compare its score against the baseline
+  // captured above. This runs once per game (gameStatus only flips
+  // to "lost" once), so it correctly compares against the score as
+  // it stood BEFORE this game, not after.
   useEffect(() => {
-    if (gameStatus === "won") {
+    if (gameStatus === "lost") {
       setIsNewBest(previousBest === null || score > previousBest);
     } else if (gameStatus === "ready") {
       setIsNewBest(false); // reset the banner for the next game
@@ -66,12 +67,12 @@ function Game() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStatus]);
 
-  // Once the win is actually confirmed saved, fold it into the
+  // Once the game is actually confirmed saved, fold it into the
   // local baseline — so restarting the SAME difficulty compares the
   // next game against the truly latest best, without needing another
   // network round trip.
   useEffect(() => {
-    if (gameStatus === "won" && saveStatus === "saved") {
+    if (gameStatus === "lost" && saveStatus === "saved") {
       setPreviousBest((prev) => (prev === null || score > prev ? score : prev));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,6 +89,7 @@ function Game() {
         minesRemaining={minesRemaining}
         timeElapsed={timeElapsed}
         score={score}
+        cellsRevealed={cellsRevealed}
         hintsRemaining={hintsRemaining}
         onHint={useHint}
         onRestart={restart}
@@ -106,6 +108,7 @@ function Game() {
         gameStatus={gameStatus}
         score={score}
         timeElapsed={timeElapsed}
+        cellsRevealed={cellsRevealed}
         hintsUsed={hintsUsed}
         saveStatus={saveStatus}
         isNewBest={isNewBest}

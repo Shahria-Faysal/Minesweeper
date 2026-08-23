@@ -10,7 +10,7 @@ function Cell({ cell, gameStatus, isHinted, onReveal, onFlag }) {
     onFlag(row, col);
   }
 
-  const isGameOver = gameStatus === "won" || gameStatus === "lost";
+  const isGameOver = gameStatus === "lost";
   const showAsMine = isRevealed && isMine;
   const isWrongFlag = isGameOver && isFlagged && !isMine;
   // Only show the hint glow on a cell that's still actually hidden —

@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 $userId = require_login();
 
 $stmt = $pdo->prepare(
-    "SELECT id, difficulty, score, time_taken, result, hints_used, played_at
+    "SELECT id, difficulty, score, time_taken, cells_revealed, hints_used, played_at
      FROM game_results
      WHERE user_id = ?
      ORDER BY played_at DESC
@@ -33,13 +33,13 @@ $rows = $stmt->fetchAll();
 
 $history = array_map(static function ($row) {
     return [
-        'id'         => (int) $row['id'],
-        'difficulty' => $row['difficulty'],
-        'result'     => $row['result'],
-        'score'      => (int) $row['score'],
-        'timeTaken'  => (int) $row['time_taken'],
-        'hintsUsed'  => (int) $row['hints_used'],
-        'playedAt'   => $row['played_at'],
+        'id'            => (int) $row['id'],
+        'difficulty'    => $row['difficulty'],
+        'score'         => (int) $row['score'],
+        'timeTaken'     => (int) $row['time_taken'],
+        'cellsRevealed' => (int) $row['cells_revealed'],
+        'hintsUsed'     => (int) $row['hints_used'],
+        'playedAt'      => $row['played_at'],
     ];
 }, $rows);
 

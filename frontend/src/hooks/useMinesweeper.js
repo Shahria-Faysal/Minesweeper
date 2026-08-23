@@ -9,7 +9,7 @@ import {
   revealAllMines,
   toggleFlag,
   countFlags,
-  checkWin,
+  countRevealedSafeCells,
   findHintCell,
   calculateScore,
 } from "../utils/minesweeper";
@@ -18,11 +18,13 @@ import { saveGameResult } from "../services/gameService";
 /**
  * Owns all Minesweeper state and exposes the actions a page needs.
  *
- * gameStatus moves through: "ready" -> "playing" -> "won" | "lost"
+ * gameStatus moves through: "ready" -> "playing" -> "lost"
  *   ready:   board exists, but mines aren't placed yet (waiting for
  *            the first click so first-click safety can work)
  *   playing: mines are placed, timer is running
- *   won/lost: game over, timer stopped, result gets saved once
+ *   lost:    a mine was revealed — the only way a game ends. There
+ *            is no win condition; score rewards how far you got
+ *            (see calculateScore in utils/minesweeper.js).
  */
 export function useMinesweeper(initialDifficulty = "beginner") {
   const [difficulty, setDifficulty] = useState(initialDifficulty);
@@ -51,7 +53,7 @@ export function useMinesweeper(initialDifficulty = "beginner") {
   const hasSavedRef = useRef(false);
 
   // Timer only ticks while gameStatus === "playing". Cleans itself
-  // up whenever gameStatus changes (including to won/lost) or the
+  // up whenever gameStatus changes (including to "lost") or the
   // component unmounts.
   useEffect(() => {
     if (gameStatus === "playing") {
@@ -68,11 +70,11 @@ export function useMinesweeper(initialDifficulty = "beginner") {
   }, []);
 
   // Fires exactly once per finished game: as soon as gameStatus
-  // becomes "won" or "lost", send the result to the backend. The
-  // backend determines WHO this result belongs to from the session
-  // cookie — this payload never includes a user id.
+  // becomes "lost", send the result to the backend. The backend
+  // determines WHO this result belongs to from the session cookie —
+  // this payload never includes a user id.
   useEffect(() => {
-    if (gameStatus !== "won" && gameStatus !== "lost") return;
+    if (gameStatus !== "lost") return;
     if (hasSavedRef.current) return;
 
     hasSavedRef.current = true; // claim the save before the request even starts
@@ -80,9 +82,9 @@ export function useMinesweeper(initialDifficulty = "beginner") {
 
     saveGameResult({
       difficulty,
-      score: calculateScore(timeElapsed, hintsUsed),
+      score: calculateScore(countRevealedSafeCells(board), timeElapsed, hintsUsed),
       timeTaken: timeElapsed,
-      result: gameStatus === "won" ? "win" : "lose",
+      cellsRevealed: countRevealedSafeCells(board),
       hintsUsed,
     })
       .then(() => setSaveStatus("saved"))
@@ -112,7 +114,7 @@ export function useMinesweeper(initialDifficulty = "beginner") {
   }, [difficulty]);
 
   function revealCellAt(row, col) {
-    if (gameStatus === "won" || gameStatus === "lost") return;
+    if (gameStatus === "lost") return;
 
     const targetCell = board[row][col];
     if (targetCell.isRevealed || targetCell.isFlagged) return;
@@ -137,14 +139,14 @@ export function useMinesweeper(initialDifficulty = "beginner") {
 
     const nextBoard = revealCell(workingBoard, row, col);
     setBoard(nextBoard);
-
-    if (checkWin(nextBoard)) {
-      setGameStatus("won");
-    }
+    // No win check — the game only ends by hitting a mine. If every
+    // safe cell has been revealed, the only cells left ARE mines, so
+    // the next click ends the game naturally without any special
+    // case here.
   }
 
   function flagCellAt(row, col) {
-    if (gameStatus === "won" || gameStatus === "lost") return;
+    if (gameStatus === "lost") return;
     setBoard((prevBoard) => toggleFlag(prevBoard, row, col));
   }
 
@@ -174,7 +176,8 @@ export function useMinesweeper(initialDifficulty = "beginner") {
 
   const flagCount = countFlags(board);
   const minesRemaining = config.mines - flagCount;
-  const score = calculateScore(timeElapsed, hintsUsed);
+  const cellsRevealed = countRevealedSafeCells(board);
+  const score = calculateScore(cellsRevealed, timeElapsed, hintsUsed);
   const hintsRemaining = MAX_HINTS - hintsUsed;
 
   return {
@@ -187,6 +190,7 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     hintsRemaining,
     hintCell,
     minesRemaining,
+    cellsRevealed,
     score,
     saveStatus,
     changeDifficulty: resetGame,

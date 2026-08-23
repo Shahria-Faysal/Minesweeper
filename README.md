@@ -1,75 +1,65 @@
 # Minesweeper Web Application
 
-React (Vite) frontend + Plain PHP backend + MySQL. All 8 phases complete.
+React (Vite) frontend + Plain PHP backend + MySQL.
 
 ## Structure
 ```
 minesweeper-web-app/
 ├── frontend/
-│   ├── .env.example                configure API_BASE_URL here (Phase 8)
+│   ├── .env.example
 │   └── src/
-│       ├── utils/minesweeper.js
+│       ├── utils/minesweeper.js    game logic — no win condition; score
+│       │                            rewards cells revealed + time survived
 │       ├── hooks/ (useAuth, useMinesweeper, useTheme)
-│       ├── context/ (AuthContext, ThemeContext — dark mode, Phase 8)
-│       ├── styles/tables.css       filter bar / table / stat-card / dashboard-header styles
-│       ├── components/
-│       │   ├── Navbar.jsx           NavLink-based, brand, theme toggle (Phase 8)
-│       │   ├── ThemeToggle.jsx      ☀ Light / 🌙 Dark switch (Phase 8)
-│       │   ├── FilterBar.jsx        shared filter buttons (Phase 8 dedup)
-│       │   ├── ProtectedRoute.jsx
-│       │   ├── Cell.jsx / MinesweeperBoard.jsx   responsive board sizing (Phase 8)
-│       │   ├── GameHeader.jsx       shows Hints Remaining (Phase 8)
-│       │   └── ResultModal.jsx      final win/lose copy + nav buttons (Phase 8)
-│       ├── pages/
-│       │   ├── Login.jsx / Register.jsx
-│       │   ├── Game.jsx + Game.css
-│       │   ├── Leaderboard.jsx / History.jsx
-│       │   ├── Dashboard.jsx        Play Minesweeper CTA (Phase 8)
-│       │   └── Profile.jsx          real content, no longer a placeholder (Phase 8)
+│       ├── context/ (AuthContext, ThemeContext)
+│       ├── styles/tables.css
+│       ├── components/ (Navbar, ThemeToggle, FilterBar, ProtectedRoute,
+│       │                Cell, MinesweeperBoard, GameHeader, DifficultySelector,
+│       │                ResultModal — single "GAME OVER" screen, no win branch)
+│       ├── pages/ (Login, Register, Game, Leaderboard, History, Dashboard, Profile)
 │       └── services/ (api.js, authService.js, gameService.js)
-├── backend/            PHP API (goes inside XAMPP htdocs)
+├── backend/
 │   ├── config/ (db.php, cors.php, auth.php)
 │   ├── register.php / login.php / logout.php
-│   ├── save-score.php
-│   └── leaderboard.php / history.php / stats.php
+│   ├── save-score.php   no "result" field — validates cells_revealed instead
+│   ├── leaderboard.php  ranks ALL games by score (no win filter)
+│   ├── history.php
+│   └── stats.php        no win rate / streaks — highest score, longest
+│                          survival, most cells revealed, average score
 ├── database/
-│   └── schema.sql
+│   ├── schema.sql                          fresh installs — no `result` column
+│   └── migration-remove-win-condition.sql  run this if you already have data
 └── README.md
 ```
 
 ## Progress
-- **Phase 1–7** — full stack: PHP-session auth, complete Minesweeper
-  game (mine placement, flood fill, hints, timer, scoring), saving
-  results to MySQL, leaderboard, personal history, and statistics.
-  All done.
-- **Phase 8 (final polish)** — done:
-  - **Dark mode**: `ThemeContext` toggles a `data-theme` attribute on
-    `<html>`; every color in the app is a CSS variable in `index.css`
-    keyed off that attribute. Persisted via `localStorage` and
-    defaults to the OS preference on first visit.
-  - **Responsive design**: the board's cell size is a CSS variable
-    (`--cell-size`) overridden at two breakpoints, so the grid shrinks
-    on phones without any JS; long tables scroll horizontally instead
-    of breaking layout; the navbar wraps; stat cards reflow.
-  - **Consistent design**: every page renders inside the same
-    `.page` card, and every button in the app uses one shared
-    `.btn` / `.btn-primary` / `.btn-active` system instead of each
-    page defining its own button CSS.
-  - **Dashboard**: now has a "Play Minesweeper" call-to-action button
-    alongside the existing stats.
-  - **Game UI / result screens**: header now shows Hints *Remaining*;
-    the win/lose modal matches the requested copy exactly and adds
-    "View Statistics" / "Leaderboard" navigation buttons.
-  - **Cleanup**: extracted a shared `FilterBar` component (was
-    duplicated in Leaderboard and Dashboard); `API_BASE_URL` is now
-    configurable via `.env` (see `.env.example`) instead of hardcoded;
-    removed an unused import; confirmed no console errors, no
-    unused imports, and no lint errors project-wide.
+All original 8 phases are done, plus one design change: **the win
+condition was removed.** The game now only ends by hitting a mine —
+there's no "clear the board" win state. Score rewards progress and
+survival instead of speed-to-completion:
+
+```
+score = (cells_revealed × 10) + (time_survived × 2) − (hints_used × 50)
+```
+
+Everywhere this touched:
+- **Game logic** — `checkWin()` removed; `gameStatus` only has
+  `"ready" | "playing" | "lost"`.
+- **Result screen** — one unified "💣 GAME OVER" screen (was two).
+- **Dashboard** — Games Won/Lost, Win Rate, and win streaks removed
+  (they don't mean anything without a win); replaced with Highest
+  Score, Average Score, Longest Survival, Most Cells Revealed.
+- **Leaderboard** — ranks the top 10 scores across ALL games, not
+  just wins.
+- **Database** — `game_results.result` column dropped; `cells_revealed`
+  column added. **If you already have data**, run
+  `database/migration-remove-win-condition.sql` in phpMyAdmin instead
+  of re-importing `schema.sql` (existing rows keep their score/time
+  but get `cells_revealed = 0`, since that wasn't tracked before).
 
 **Before running:** copy `frontend/.env.example` to `frontend/.env`
-and adjust `VITE_API_BASE_URL` if your `backend/` folder lives
-somewhere other than `http://localhost/backend` in htdocs. If you skip
-this, the app still works — it falls back to that same default.
+and adjust `VITE_API_BASE_URL` if needed (falls back to
+`http://localhost/backend` otherwise).
 
 See the setup instructions provided by Claude in chat for full
 step-by-step installation and testing instructions.

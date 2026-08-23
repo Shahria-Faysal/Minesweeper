@@ -6,10 +6,14 @@ const SAVE_STATUS_TEXT = {
   error: "Couldn't save result — check your connection.",
 };
 
+// There's no win condition, so there's only one result screen: it
+// shows whenever a mine ends the game, and score reflects how far
+// the player got, not a win/lose outcome.
 function ResultModal({
   gameStatus,
   score,
   timeElapsed,
+  cellsRevealed,
   hintsUsed,
   saveStatus,
   isNewBest,
@@ -17,22 +21,21 @@ function ResultModal({
 }) {
   const navigate = useNavigate();
 
-  const isOver = gameStatus === "won" || gameStatus === "lost";
-  if (!isOver) return null;
+  if (gameStatus !== "lost") return null;
 
-  const isWin = gameStatus === "won";
   const saveStatusText = SAVE_STATUS_TEXT[saveStatus];
 
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h2>{isWin ? "🎉 YOU WON!" : "💣 GAME OVER"}</h2>
+        <h2>💣 GAME OVER</h2>
 
-        {isWin && isNewBest && <p className="modal-new-best">🏆 New Personal Best!</p>}
+        {isNewBest && <p className="modal-new-best">🏆 New Personal Best!</p>}
 
         <p className="modal-stat">Score: {score}</p>
-        <p className="modal-stat">Time: {timeElapsed} seconds</p>
-        {isWin && <p className="modal-stat">Hints Used: {hintsUsed}</p>}
+        <p className="modal-stat">Time Survived: {timeElapsed} seconds</p>
+        <p className="modal-stat">Cells Revealed: {cellsRevealed}</p>
+        <p className="modal-stat">Hints Used: {hintsUsed}</p>
 
         {saveStatusText && (
           <p className={`modal-save-status modal-save-${saveStatus}`}>{saveStatusText}</p>
@@ -40,13 +43,11 @@ function ResultModal({
 
         <div className="modal-actions">
           <button type="button" className="btn btn-primary" onClick={onRestart}>
-            {isWin ? "Play Again" : "Try Again"}
+            Try Again
           </button>
-          {isWin && (
-            <button type="button" className="btn" onClick={() => navigate("/dashboard")}>
-              View Statistics
-            </button>
-          )}
+          <button type="button" className="btn" onClick={() => navigate("/dashboard")}>
+            View Statistics
+          </button>
           <button type="button" className="btn" onClick={() => navigate("/leaderboard")}>
             Leaderboard
           </button>

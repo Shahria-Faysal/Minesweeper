@@ -50,9 +50,9 @@ function History() {
               <tr>
                 <th>Date</th>
                 <th>Difficulty</th>
-                <th>Result</th>
                 <th>Score</th>
                 <th>Time</th>
+                <th>Cells Revealed</th>
                 <th>Hints Used</th>
               </tr>
             </thead>
@@ -61,13 +61,9 @@ function History() {
                 <tr key={game.id}>
                   <td>{formatDate(game.playedAt)}</td>
                   <td>{game.difficulty}</td>
-                  <td>
-                    <span className={`result-badge result-${game.result}`}>
-                      {game.result === "win" ? "Win" : "Lose"}
-                    </span>
-                  </td>
                   <td>{game.score}</td>
                   <td>{game.timeTaken}s</td>
+                  <td>{game.cellsRevealed}</td>
                   <td>{game.hintsUsed}</td>
                 </tr>
               ))}

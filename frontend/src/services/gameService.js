@@ -6,14 +6,16 @@ import { apiPost, apiGet } from "./api";
  * Deliberately does NOT include a user id — the backend identifies
  * the player from the PHP session cookie
  * (credentials: "include", handled by apiPost), never from anything
- * this function sends.
+ * this function sends. There's also no "result" field — there's no
+ * win condition, every saved game just represents how far the
+ * player got before hitting a mine.
  */
-export function saveGameResult({ difficulty, score, timeTaken, result, hintsUsed }) {
+export function saveGameResult({ difficulty, score, timeTaken, cellsRevealed, hintsUsed }) {
   return apiPost("save-score.php", {
     difficulty,
     score,
     time_taken: timeTaken,
-    result,
+    cells_revealed: cellsRevealed,
     hints_used: hintsUsed,
   });
 }

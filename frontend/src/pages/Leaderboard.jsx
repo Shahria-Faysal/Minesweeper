@@ -61,6 +61,7 @@ function Leaderboard() {
                 <th>Difficulty</th>
                 <th>Score</th>
                 <th>Time</th>
+                <th>Cells Revealed</th>
               </tr>
             </thead>
             <tbody>
@@ -71,6 +72,7 @@ function Leaderboard() {
                   <td>{entry.difficulty}</td>
                   <td>{entry.score}</td>
                   <td>{entry.timeTaken}s</td>
+                  <td>{entry.cellsRevealed}</td>
                 </tr>
               ))}
             </tbody>

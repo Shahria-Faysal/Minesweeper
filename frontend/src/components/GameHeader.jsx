@@ -9,6 +9,7 @@ function GameHeader({
   minesRemaining,
   timeElapsed,
   score,
+  cellsRevealed,
   hintsRemaining,
   onHint,
   onRestart,
@@ -22,6 +23,7 @@ function GameHeader({
         <span>💣 Mines Remaining: {minesRemaining}</span>
         <span>⏱ {formatTime(timeElapsed)}</span>
         <span>🏆 Score: {score}</span>
+        <span>🧩 Cells Revealed: {cellsRevealed}</span>
         <span>💡 Hints Remaining: {hintsRemaining}</span>
       </div>
 
