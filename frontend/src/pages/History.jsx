@@ -34,7 +34,14 @@ function History() {
 
   return (
     <div className="page">
-      <h1>Game History</h1>
+      <div className="header-flex">
+        <div>
+          <h2>OPERATOR LOGS</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "4px" }}>
+            COMPLETED GAME RECORD
+          </p>
+        </div>
+      </div>
 
       {status === "loading" && <p className="loading-state">Loading your games...</p>}
       {status === "error" && <p className="error-state">Couldn't load your game history.</p>}

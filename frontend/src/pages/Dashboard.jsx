@@ -13,9 +13,9 @@ const FILTERS = [
 
 function StatCard({ label, value }) {
   return (
-    <div className="stat-card">
-      <p className="stat-label">{label}</p>
-      <p className="stat-value">{value}</p>
+    <div className="stat-item">
+      <span className="stat-label">{label.toUpperCase()}</span>
+      <span className="stat-value">{value}</span>
     </div>
   );
 }
@@ -52,13 +52,15 @@ function Dashboard() {
 
   return (
     <div className="page">
-      <div className="dashboard-header">
+      <div className="header-flex">
         <div>
-          <h1>Welcome, {user.username}</h1>
-          <p className="dashboard-subtitle">Here's how your Minesweeper games are going.</p>
+          <h2>OPERATOR DASHBOARD: {user.username.toUpperCase()}</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "4px" }}>
+            SYSTEM STATUS: ACTIVE
+          </p>
         </div>
         <Link to="/game" className="btn btn-primary">
-          Play Minesweeper
+          Start Game
         </Link>
       </div>
 
@@ -74,13 +76,13 @@ function Dashboard() {
       {status === "ready" && stats && stats.gamesPlayed > 0 && (
         <div className="stats-grid">
           <StatCard label="Games Played" value={stats.gamesPlayed} />
-          <StatCard label="Highest Score" value={stats.highestScore ?? "—"} />
-          <StatCard label="Average Score" value={stats.averageScore} />
+          <StatCard label="High Score" value={stats.highestScore ?? "—"} />
+          <StatCard label="Avg Score" value={stats.averageScore} />
           <StatCard
-            label="Longest Survival"
+            label="Survival Time"
             value={stats.longestSurvival !== null ? `${stats.longestSurvival}s` : "—"}
           />
-          <StatCard label="Most Cells Revealed" value={stats.mostCellsRevealed ?? "—"} />
+          <StatCard label="Cells Revealed" value={stats.mostCellsRevealed ?? "—"} />
         </div>
       )}
     </div>

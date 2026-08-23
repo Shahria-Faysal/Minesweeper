@@ -22,7 +22,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <NavLink to={isAuthenticated ? "/dashboard" : "/"} end className="navbar-brand">
-        💣 Minesweeper
+        [MINESWEEPER_SYS]
       </NavLink>
 
       <div className="navbar-links">

@@ -50,7 +50,7 @@ function Register() {
 
   return (
     <div className="page">
-      <h1>Register</h1>
+      <h2>OPERATOR REGISTRATION</h2>
 
       <form className="auth-form" onSubmit={handleSubmit}>
         <label>
@@ -64,7 +64,7 @@ function Register() {
         </label>
 
         <label>
-          Email
+          Email Address
           <input
             type="email"
             name="email"
@@ -75,7 +75,7 @@ function Register() {
         </label>
 
         <label>
-          Password
+          Access Password
           <input
             type="password"
             name="password"
@@ -86,7 +86,7 @@ function Register() {
         </label>
 
         <label>
-          Confirm Password
+          Confirm Access Password
           <input
             type="password"
             name="confirmPassword"
@@ -99,12 +99,12 @@ function Register() {
         {error && <p className="form-error">{error}</p>}
 
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? "Registering..." : "Register"}
+          {isSubmitting ? "Registering..." : "Establish Access Profile"}
         </button>
       </form>
 
-      <p>
-        Already have an account? <Link to="/">Login</Link>
+      <p style={{ marginTop: "1.5rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
+        Profile already exists? <Link to="/" style={{ color: "var(--accent)", fontWeight: "bold" }}>Authenticate Operator</Link>
       </p>
     </div>
   );

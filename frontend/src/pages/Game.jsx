@@ -3,10 +3,15 @@ import { useMinesweeper } from "../hooks/useMinesweeper";
 import { DIFFICULTIES } from "../utils/minesweeper";
 import { fetchStats } from "../services/gameService";
 import DifficultySelector from "../components/DifficultySelector";
-import GameHeader from "../components/GameHeader";
 import MinesweeperBoard from "../components/MinesweeperBoard";
 import ResultModal from "../components/ResultModal";
 import "./Game.css";
+
+function formatTime(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
+}
 
 function Game() {
   const {
@@ -80,29 +85,47 @@ function Game() {
 
   return (
     <div className="page">
-      <h1>Minesweeper</h1>
+      <div className="header-flex">
+        <div>
+          <h2>OPERATOR CONSOLE</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "4px" }}>
+            SYSTEM STATUS: ACTIVE
+          </p>
+        </div>
+        <div className="game-actions">
+          <button
+            type="button"
+            className="btn"
+            onClick={useHint}
+            disabled={hintDisabled}
+            style={{ marginRight: "0.5rem" }}
+          >
+            💡 HINT ({hintsRemaining})
+          </button>
+          <button type="button" className="btn btn-primary" onClick={restart}>
+            🔄 RESTART
+          </button>
+        </div>
+      </div>
 
       <DifficultySelector difficulty={difficulty} onChange={changeDifficulty} />
 
-      <GameHeader
-        difficultyLabel={DIFFICULTIES[difficulty].label}
-        minesRemaining={minesRemaining}
-        timeElapsed={timeElapsed}
-        score={score}
-        cellsRevealed={cellsRevealed}
-        hintsRemaining={hintsRemaining}
-        onHint={useHint}
-        onRestart={restart}
-        hintDisabled={hintDisabled}
-      />
+      <div className="game-area">
+        <div className="status-bar">
+          <div>DIFFICULTY: <span>{DIFFICULTIES[difficulty].label.toUpperCase()}</span></div>
+          <div>MINES: <span>{minesRemaining}</span></div>
+          <div>TIME: <span>{formatTime(timeElapsed)}</span></div>
+          <div>SCORE: <span>{score}</span></div>
+        </div>
 
-      <MinesweeperBoard
-        board={board}
-        gameStatus={gameStatus}
-        hintCell={hintCell}
-        onReveal={revealCellAt}
-        onFlag={flagCellAt}
-      />
+        <MinesweeperBoard
+          board={board}
+          gameStatus={gameStatus}
+          hintCell={hintCell}
+          onReveal={revealCellAt}
+          onFlag={flagCellAt}
+        />
+      </div>
 
       <ResultModal
         gameStatus={gameStatus}

@@ -40,7 +40,14 @@ function Leaderboard() {
 
   return (
     <div className="page">
-      <h1>Leaderboard</h1>
+      <div className="header-flex">
+        <div>
+          <h2>OPERATOR LEADERBOARD</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "4px" }}>
+            TOP TACTICAL SCORES
+          </p>
+        </div>
+      </div>
 
       <FilterBar options={FILTERS} active={filter} onChange={handleFilterChange} />
 

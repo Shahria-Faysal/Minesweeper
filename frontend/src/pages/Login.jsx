@@ -40,7 +40,7 @@ function Login() {
 
   return (
     <div className="page">
-      <h1>Login</h1>
+      <h2>OPERATOR LOGIN</h2>
 
       {justRegistered && (
         <p className="form-success">Registration successful! Please log in.</p>
@@ -48,7 +48,7 @@ function Login() {
 
       <form className="auth-form" onSubmit={handleSubmit}>
         <label>
-          Email
+          Email Address
           <input
             type="email"
             value={email}
@@ -58,7 +58,7 @@ function Login() {
         </label>
 
         <label>
-          Password
+          Security Password
           <input
             type="password"
             value={password}
@@ -70,12 +70,12 @@ function Login() {
         {error && <p className="form-error">{error}</p>}
 
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? "Logging in..." : "Login"}
+          {isSubmitting ? "Authenticating..." : "Establish Connection"}
         </button>
       </form>
 
-      <p>
-        Don't have an account? <Link to="/register">Register</Link>
+      <p style={{ marginTop: "1.5rem", fontSize: "0.9rem", color: "var(--text-muted)" }}>
+        No credential profile? <Link to="/register" style={{ color: "var(--accent)", fontWeight: "bold" }}>Register Operator</Link>
       </p>
     </div>
   );

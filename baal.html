@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minesweeper Tactical UI</title>
+  <style>
+    :root {
+      --bg: #121418;
+      --panel: #1a1d24;
+      --border: #2d323e;
+      --accent-yellow: #f59e0b;
+      --accent-red: #ef4444;
+      --text-bright: #ffffff;
+      --text-muted: #8b94a5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Courier New', Courier, monospace; /* Monospace tactical font */
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-bright);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    nav {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: var(--panel);
+      border: 2px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: var(--accent-yellow);
+      letter-spacing: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .nav-links a.active, .nav-links a:hover {
+      color: var(--text-bright);
+      border-bottom: 2px solid var(--accent-yellow);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 2px solid var(--border);
+      padding: 2rem;
+    }
+
+    .header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    .btn {
+      background: var(--accent-yellow);
+      color: #000;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      font-weight: bold;
+      font-family: inherit;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .btn:hover {
+      background: #d97706;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 1rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--accent-yellow);
+    }
+
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+    }
+
+    .status-bar {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-bright);
+      background: var(--panel);
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .status-bar span {
+      color: var(--accent-yellow);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(9, 36px);
+      grid-template-rows: repeat(9, 36px);
+      gap: 4px;
+    }
+
+    .cell {
+      background: #252a34;
+      border: 1px solid #323846;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cell:hover {
+      background: #3a4150;
+      border-color: var(--accent-yellow);
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">[MINESWEEPER_SYS]</div>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Dashboard</a></li>
+      <li><a href="#">Play</a></li>
+      <li><a href="#">Leaderboard</a></li>
+    </ul>
+    <div>USER: <strong>FRASS</strong></div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div class="header-flex">
+        <div>
+          <h2>OPERATOR DASHBOARD</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">SYSTEM STATUS: ACTIVE</p>
+        </div>
+        <button class="btn">Start Game</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">GAMES PLAYED</span>
+          <span class="stat-value">1</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">HIGH SCORE</span>
+          <span class="stat-value">640</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">AVG SCORE</span>
+          <span class="stat-value">640</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">SURVIVAL TIME</span>
+          <span class="stat-value">50s</span>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="status-bar">
+          <div>MINES: <span>10</span></div>
+          <div>TIME: <span>00:00</span></div>
+          <div>SCORE: <span>0</span></div>
+        </div>
+
+        <div class="board">
+          <script>
+            for(let i=0; i<81; i++) {
+              document.write('<div class="cell"></div>');
+            }
+          </script>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

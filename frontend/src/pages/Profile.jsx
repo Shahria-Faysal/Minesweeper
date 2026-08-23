@@ -7,8 +7,17 @@ function Profile() {
 
   return (
     <div className="page">
-      <h1>Profile</h1>
-      <p className="profile-username">{user.username}</p>
+      <div className="header-flex">
+        <div>
+          <h2>OPERATOR PROFILE</h2>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "4px" }}>
+            IDENTITY READOUT
+          </p>
+        </div>
+      </div>
+      <p className="profile-username" style={{ fontSize: "1.5rem", fontWeight: "bold", color: "var(--accent)", margin: "1rem 0" }}>
+        {user.username.toUpperCase()}
+      </p>
       <p className="dashboard-subtitle">
         Want to see how you're doing? Check your <Link to="/dashboard">stats on the Dashboard</Link>.
       </p>

@@ -5,18 +5,18 @@
    context/ThemeContext.jsx for how the attribute gets set.
    --------------------------------------------------------------- */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
-  --bg: #f5f5f8;
-  --surface: #ffffff;
-  --surface-hover: #eeeef2;
-  --text: #1f2328;
-  --text-muted: #5b6270;
-  --border: #e2e2e7;
+  --bg: #121418;
+  --surface: #1a1d24;
+  --surface-hover: #252a34;
+  --text: #f8fafc;
+  --text-muted: #8b94a5;
+  --border: #2d323e;
 
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-contrast: #ffffff;
+  --accent: #f59e0b;
+  --accent-hover: #d97706;
+  --accent-contrast: #121418;
 
   --success: #2e7d32;
   --success-bg: #e8f5e9;
@@ -25,11 +25,11 @@
   --warning: #f57f17;
 
   /* Minesweeper board colors */
-  --cell-hidden-bg: #c0c0c0;
-  --cell-hidden-hover-bg: #d0d0d0;
-  --cell-revealed-bg: #e8e8e8;
-  --board-border: #666666;
-  --mine-bg: #ff6b6b;
+  --cell-hidden-bg: #252a34;
+  --cell-hidden-hover-bg: #3a4150;
+  --cell-revealed-bg: #1a1d24;
+  --board-border: #454b58;
+  --mine-bg: #7f1d1d;
 
   --num-1: #1565c0;
   --num-2: #2e7d32;
@@ -42,43 +42,62 @@
 
   --cell-size: 2rem;
 
-  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --sans: "Courier New", Courier, monospace;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --bg: #14151a;
-  --surface: #1c1e26;
-  --surface-hover: #262933;
-  --text: #e6e6ea;
-  --text-muted: #9aa0ac;
-  --border: #2c2f3a;
+  --bg: #121418;
+  --surface: #1a1d24;
+  --surface-hover: #252a34;
+  --text: #ffffff;
+  --text-muted: #8b94a5;
+  --border: #2d323e;
 
-  --accent: #818cf8;
-  --accent-hover: #6366f1;
-  --accent-contrast: #14151a;
+  --accent: #f59e0b;
+  --accent-hover: #d97706;
+  --accent-contrast: #121418;
 
-  --success: #66bb6a;
-  --success-bg: rgba(102, 187, 106, 0.15);
-  --danger: #ef5350;
-  --danger-bg: rgba(239, 83, 80, 0.15);
-  --warning: #ffca28;
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.15);
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.15);
+  --warning: #f59e0b;
 
-  --cell-hidden-bg: #3a3d47;
-  --cell-hidden-hover-bg: #454955;
-  --cell-revealed-bg: #262933;
-  --board-border: #4a4d58;
-  --mine-bg: #e05252;
+  /* Minesweeper board colors */
+  --cell-hidden-bg: #252a34;
+  --cell-hidden-hover-bg: #3a4150;
+  --cell-revealed-bg: #1a1d24;
+  --board-border: #2d323e;
+  --mine-bg: #7f1d1d;
 
-  --num-1: #64b5f6;
-  --num-2: #81c784;
-  --num-3: #e57373;
-  --num-4: #ba68c8;
-  --num-5: #ffb74d;
-  --num-6: #4dd0e1;
-  --num-7: #e6e6ea;
-  --num-8: #9aa0ac;
+  --num-1: #3b82f6;
+  --num-2: #10b981;
+  --num-3: #ef4444;
+  --num-4: #a855f7;
+  --num-5: #f97316;
+  --num-6: #06b6d4;
+  --num-7: #ffffff;
+  --num-8: #8b94a5;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #e8e7e2;
+  --surface: #f5f4ef;
+  --surface-hover: #deddd6;
+  --text: #20252b;
+  --text-muted: #68717d;
+  --border: #c8c7c0;
+  --accent: #b45309;
+  --accent-hover: #92400e;
+  --accent-contrast: #fff;
+  --cell-hidden-bg: #b9b9b2;
+  --cell-hidden-hover-bg: #a7a79f;
+  --cell-revealed-bg: #e0dfd8;
+  --board-border: #77766f;
+  --mine-bg: #fca5a5;
 }
 
 /* ---------------------------------------------------------------
@@ -94,6 +113,9 @@ body {
   background: var(--bg);
   color: var(--text);
   transition: background-color 0.15s ease, color 0.15s ease;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 #root {
@@ -103,7 +125,9 @@ body {
 h1,
 h2 {
   color: var(--text);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 h1 {
@@ -141,7 +165,7 @@ a {
   justify-content: center;
   gap: 0.4rem;
   padding: 0.55rem 1rem;
-  border-radius: 6px;
+  border-radius: 0;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
@@ -149,6 +173,9 @@ a {
   text-decoration: none;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .btn:hover:not(:disabled) {
