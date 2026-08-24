@@ -1,0 +1,133 @@
+\chapter{User Interface and Major Features}
+\label{ch:ui-features}
+
+\section{Page Walkthrough}
+
+\subsection{Login and Registration}
+The login page (Figure~\ref{fig:ui-login}) collects an email address and
+password. The registration page (Figure~\ref{fig:ui-register}) collects a
+username, email, password, and password confirmation, and links back to the
+login page for existing users.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig_login.png}
+    \caption{Login page (dark theme).}
+    \label{fig:ui-login}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig_register.png}
+    \caption{Registration page (dark theme).}
+    \label{fig:ui-register}
+\end{figure}
+
+\subsection{Dashboard}
+The dashboard (Figures~\ref{fig:ui-dashboard-dark}
+and~\ref{fig:ui-dashboard-light}) is the player's home screen. It shows the
+player's identity, a set of aggregate statistics (games played, high score,
+average score, longest survival time, most cells revealed), filterable by
+"All Modes", "Beginner", or "Advanced", and quick-access links to the
+dashboard, game history, leaderboard, and a new game.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig_profile_dark.png}
+    \caption{Player dashboard with combat statistics (dark theme).}
+    \label{fig:ui-dashboard-dark}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig_profile_light.png}
+    \caption{Player dashboard with combat statistics (light theme), showing
+    theme support.}
+    \label{fig:ui-dashboard-light}
+\end{figure}
+
+\subsection{Game Page}
+The game page (Figure~\ref{fig:ui-game}) shows a difficulty selector
+(Beginner / Advanced), the current mine count, flag count, and score, a
+countdown timer, the interactive board itself, a hint button showing
+remaining hints, a restart button, and the shield control with its current
+state (\emph{Ready}, \emph{Active}, or \emph{Used}).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/fig_game_board.png}
+    \caption{Active game on Advanced difficulty, showing the timer, score,
+    flag count, partially revealed board, and shield control.}
+    \label{fig:ui-game}
+\end{figure}
+
+\subsection{Leaderboard}
+The leaderboard page (Figure~\ref{fig:ui-leaderboard}) lists the top scores
+across all players, filterable by "All", "Beginner", or "Advanced", with
+columns for rank, player, difficulty, score, time, cells revealed, and
+hints used.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/fig_leaderboard.png}
+    \caption{Global leaderboard, filtered to all difficulties.}
+    \label{fig:ui-leaderboard}
+\end{figure}
+
+\subsection{History}
+The history page (Figure~\ref{fig:ui-history}) lists the logged-in player's
+own past completed games, newest first, with the same metric columns as the
+leaderboard.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/fig_history.png}
+    \caption{Player's personal game history.}
+    \label{fig:ui-history}
+\end{figure}
+
+\section{Theme Support}
+The application supports light and dark themes, toggled from the navigation
+bar and managed through \texttt{ThemeContext}. Figures~\ref{fig:ui-dashboard-dark}
+and~\ref{fig:ui-dashboard-light} show the same dashboard rendered in both
+themes.
+
+\section{Feature Summary}
+
+\begin{table}[h]
+\centering
+\caption{Core gameplay features.}
+\label{tab:core-features}
+\begin{tabular}{@{}p{4cm}p{9.5cm}@{}}
+\toprule
+\textbf{Feature} & \textbf{Description} \\
+\midrule
+Two difficulties & Beginner ($9\times9$, 10 mines) and Advanced ($16\times16$, 40 mines) \\
+First-click safety & Guaranteed-safe first reveal and its neighbourhood \\
+Flood-fill reveal & Automatic cascading reveal of zero-adjacency regions \\
+Flagging & Mark/unmark suspected mine cells, capped at the mine count \\
+Chording & Reveal all unflagged neighbours of a satisfied numbered cell \\
+Hints & Up to 3 random safe-cell highlights per game, at a score cost \\
+Shield & One-time protection against the next mine reveal \\
+Survival timer & 120-second countdown; game ends on mine or timeout \\
+Live scoring & Score recalculated and displayed during play \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Account and meta features.}
+\label{tab:meta-features}
+\begin{tabular}{@{}p{4cm}p{9.5cm}@{}}
+\toprule
+\textbf{Feature} & \textbf{Description} \\
+\midrule
+Registration / Login / Logout & Session-based account management \\
+Personal dashboard & Aggregate statistics, filterable by difficulty \\
+Game history & Full list of the player's own past completed games \\
+Global leaderboard & Top scores across all players, filterable by difficulty \\
+Theme support & Light/dark theme toggle \\
+\bottomrule
+\end{tabular}
+\end{table}

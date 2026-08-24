@@ -1,0 +1,104 @@
+\chapter{System Architecture and Software Design}
+\label{ch:architecture}
+
+\section{Overall Architecture}
+The application follows a three-tier architecture, but unlike a classic
+server-rendered PHP application, the frontend is a React single-page
+application that communicates with the backend purely through a JSON API,
+rather than through full-page navigations. Figure~\ref{fig:architecture}
+shows the overall structure.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1.4cm, every node/.style={font=\small}]
+    \tikzstyle{tier} = [rectangle, draw=black, thick, rounded corners,
+        fill=orange!10, text width=8cm, align=center, minimum height=1.1cm]
+    \node (client) [tier] {React SPA (Vite) \\ Context, Hooks, Components, Services};
+    \node (api) [tier, below=of client] {Fetch API calls (JSON, \texttt{credentials: include})};
+    \node (backend) [tier, below=of api] {PHP Endpoints (Procedural, PDO)};
+    \node (db) [tier, below=of backend] {MySQL Database (\texttt{users}, \texttt{game\_results})};
+
+    \draw [-{Latex[length=2mm]}, thick] (client) -- (api);
+    \draw [-{Latex[length=2mm]}, thick] (api) -- (backend);
+    \draw [-{Latex[length=2mm]}, thick] (backend) -- (db);
+    \draw [-{Latex[length=2mm]}, thick] (db) -- (backend);
+    \draw [-{Latex[length=2mm]}, thick] (backend) -- (api);
+    \draw [-{Latex[length=2mm]}, thick] (api) -- (client);
+\end{tikzpicture}
+\caption{Overall three-tier architecture of the application.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Frontend Architecture}
+The frontend is organised into four layers:
+\begin{itemize}[nosep]
+    \item \textbf{Context providers} -- \texttt{AuthContext} holds the
+    current user and authentication status; \texttt{ThemeContext} holds the
+    light/dark theme preference; a \texttt{ToastContext} manages transient
+    notification messages.
+    \item \textbf{Custom hooks} -- \texttt{useMinesweeper} is the central
+    state machine for a single game session, wrapping the pure functions
+    from Chapter~\ref{ch:game-design} with React state and effects (the
+    countdown timer, hint highlight timeout, and automatic score
+    submission).
+    \item \textbf{Components / Pages} -- page-level components
+    (Login, Register, Dashboard, Game, Leaderboard, History) composed from
+    smaller presentational components (the board grid, a cell, the
+    stats cards).
+    \item \textbf{Services} -- \texttt{api.js} wraps the browser
+    \texttt{fetch} API with a consistent JSON request/response contract;
+    \texttt{authService.js} and \texttt{gameService.js} expose
+    typed functions (e.g.\ \texttt{login}, \texttt{register},
+    \texttt{saveScore}, \texttt{getLeaderboard}) built on top of it.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=1.2cm, every node/.style={font=\footnotesize}]
+    \tikzstyle{box} = [rectangle, draw=black, rounded corners, fill=blue!8,
+        text width=3.6cm, align=center, minimum height=0.9cm]
+    \node (ctx) [box] {Context Providers \\ (Auth, Theme, Toast)};
+    \node (hooks) [box, below=of ctx] {Custom Hooks \\ (useMinesweeper)};
+    \node (comp) [box, below=of hooks] {Pages / Components};
+    \node (svc) [box, below=of comp] {Services (api.js, authService, gameService)};
+    \node (backend) [box, below=of svc, fill=orange!10] {PHP Backend};
+
+    \draw [-{Latex[length=2mm]}, thick] (ctx) -- (hooks);
+    \draw [-{Latex[length=2mm]}, thick] (hooks) -- (comp);
+    \draw [-{Latex[length=2mm]}, thick] (comp) -- (svc);
+    \draw [-{Latex[length=2mm]}, thick] (svc) -- (backend);
+\end{tikzpicture}
+\caption{Frontend layered data flow.}
+\label{fig:frontend-layers}
+\end{figure}
+
+\section{Backend Architecture}
+The backend is written in procedural PHP, organised as one script per
+endpoint (e.g.\ \texttt{register.php}, \texttt{login.php},
+\texttt{save-score.php}, \texttt{leaderboard.php}, \texttt{history.php},
+\texttt{stats.php}), plus shared includes for the database connection and
+session/authentication helpers. Every protected endpoint begins by calling a
+shared \texttt{require\_login()} helper, which checks the PHP session for a
+logged-in user ID and terminates the request with an error response if it
+is absent.
+
+\section{Client-Side Route Guarding vs.\ Server-Side Authorization}
+A React \texttt{ProtectedRoute} component wraps pages such as the dashboard
+and the game page, redirecting to the login page if \texttt{AuthContext}
+does not currently hold an authenticated user. It is important to note that
+this client-side check is a \emph{user-experience} convenience only: it
+prevents an unauthenticated user from momentarily seeing a protected page's
+markup, but it grants no actual access to data. The real security boundary
+is enforced entirely server-side, by \texttt{require\_login()} checking the
+PHP session on every protected endpoint (Section~\ref{sec:session-security}
+in Chapter~\ref{ch:security}). A user could bypass \texttt{ProtectedRoute}
+entirely (e.g.\ by disabling JavaScript route checks) and would still be
+unable to retrieve another user's data, because the backend independently
+authenticates every request.
+
+\section{API Communication}
+All requests from the frontend to the backend are issued with
+\texttt{credentials: "include"}, so that the PHP session cookie is sent with
+cross-origin requests. Responses are JSON objects with a consistent shape
+(a success flag and either a data payload or an error message), which the
+\texttt{api.js} wrapper parses uniformly for every service call.

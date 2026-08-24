@@ -1,0 +1,98 @@
+\chapter{Security}
+\label{ch:security}
+
+Security is treated as a dedicated chapter because the project's central
+integrity concern -- preventing a client from fabricating a game result --
+is addressed through a specific set of server-side mechanisms that go beyond
+generic web-application hardening.
+
+\section{Password Storage}
+Passwords are hashed at registration time with
+\texttt{password\_hash(\$password, PASSWORD\_DEFAULT)} and verified at login
+time with \texttt{password\_verify()}. Plaintext passwords are never stored
+or logged.
+
+\section{Session Security}
+\label{sec:session-security}
+Authentication is session-based, using PHP's native session mechanism.
+\begin{itemize}[nosep]
+    \item \textbf{Session fixation mitigation} -- on successful login, the
+    session ID is regenerated with \texttt{session\_regenerate\_id(true)},
+    preventing an attacker from fixing a victim's session ID before login.
+    \item \textbf{Cookie hardening} -- the session cookie is configured as
+    HTTP-only (inaccessible to client-side JavaScript), with
+    \texttt{SameSite=Lax} and scoped to the application's domain.
+    \item \textbf{Server-side authorization} -- every protected endpoint
+    calls a shared \texttt{require\_login()} helper that checks for a valid
+    session before performing any work, independent of any client-side
+    route guard (Chapter~\ref{ch:architecture}).
+\end{itemize}
+
+\section{Cross-Origin Resource Sharing (CORS)}
+The backend restricts cross-origin requests to an explicit allow-list of
+known frontend origins, checked against the request's \texttt{Origin}
+header, rather than reflecting an arbitrary origin or using a wildcard.
+This is required because the frontend (Vite dev server / deployed SPA) and
+backend are served from different origins, and CORS must be configured
+correctly for the session cookie to be sent and accepted.
+
+\section{SQL Injection Prevention}
+All database access uses PDO prepared statements with bound parameters. No
+endpoint concatenates user-supplied input directly into a SQL string.
+
+\section{Server-Side Score Validation}
+\label{sec:score-validation}
+Because the game engine runs entirely on the client
+(Chapter~\ref{ch:game-design}), the score value computed in the browser
+during play is treated as untrusted input. \texttt{save-score.php}
+recomputes the score independently from the raw submitted metrics
+(\texttt{cells\_revealed}, \texttt{time\_taken}, \texttt{hints\_used}) using
+the same formula described in Section~\ref{sec:scoring}, and additionally
+bounds each metric against the known limits for the submitted difficulty
+(for example, \texttt{cells\_revealed} cannot exceed the total safe-cell
+count for that difficulty, and \texttt{hints\_used} cannot exceed 3). A
+submission whose metrics fall outside these bounds is rejected. This means
+the value shown to the player at the end of a game is never the value
+actually written to the \texttt{game\_results} table or shown on the
+leaderboard; the stored value is always the server's own computation.
+
+\section{Duplicate / Replay Submission Defense}
+To reduce the risk of the same completed game being submitted multiple
+times (whether accidentally or as a deliberate replay attempt), the backend
+computes a signature over the combination of user ID, difficulty, time
+taken, cells revealed, and hints used (an MD5 digest of the concatenated
+values), and rejects a new submission that matches a previous submission's
+signature within a 10-second window. This is a heuristic defense rather
+than a cryptographically strong nonce or idempotency-key mechanism; its
+scope and limitations are discussed further in
+Chapter~\ref{ch:limitations}.
+
+\section{Security Measures Summary}
+\begin{table}[h]
+\centering
+\caption{Summary of applied security measures.}
+\label{tab:security-summary}
+\begin{tabular}{@{}p{4.2cm}p{9.5cm}@{}}
+\toprule
+\textbf{Measure} & \textbf{Purpose} \\
+\midrule
+Bcrypt password hashing & Prevent plaintext password exposure on data breach \\
+Session ID regeneration on login & Mitigate session fixation attacks \\
+HTTP-only, SameSite cookies & Reduce cookie theft via XSS / cross-site request risk \\
+CORS origin allow-list & Prevent arbitrary origins from making authenticated requests \\
+PDO prepared statements & Prevent SQL injection \\
+Server-side score recomputation & Prevent client-fabricated leaderboard scores \\
+Metric bounds checking & Prevent out-of-range or impossible gameplay metrics \\
+Duplicate-submission signature & Reduce accidental/duplicate or naive replay submissions \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Known Absences}
+For completeness, and in the same spirit of honest disclosure as the
+security chapter of the reference report, the following protections are
+\emph{not} currently implemented: CSRF tokens on state-changing POST
+requests, request rate limiting, and enforced HTTPS in the development
+configuration (the session cookie's \texttt{secure} flag is \texttt{false}
+in the current setup). These are discussed further in
+Chapter~\ref{ch:limitations}.

@@ -1,0 +1,88 @@
+\chapter{Database Design}
+\label{ch:database}
+
+\section{Database Overview}
+The application uses a MySQL relational database with two tables:
+\texttt{users} and \texttt{game\_results}. The schema is intentionally
+small, reflecting the project's single-role, two-entity data model.
+
+\section{Tables}
+
+\begin{table}[h]
+\centering
+\caption{\texttt{users} table.}
+\label{tab:users-table}
+\begin{tabular}{@{}p{2.6cm}p{3.4cm}p{7.5cm}@{}}
+\toprule
+\textbf{Column} & \textbf{Type} & \textbf{Description} \\
+\midrule
+id & INT, PK, AUTO\_INCREMENT & Unique user identifier \\
+username & VARCHAR, UNIQUE & Display name, 3--50 characters \\
+email & VARCHAR, UNIQUE & Login email address \\
+password\_hash & VARCHAR & Bcrypt password hash via \texttt{password\_hash()} \\
+created\_at & DATETIME & Account creation timestamp \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{\texttt{game\_results} table.}
+\label{tab:results-table}
+\begin{tabular}{@{}p{3cm}p{3.4cm}p{7cm}@{}}
+\toprule
+\textbf{Column} & \textbf{Type} & \textbf{Description} \\
+\midrule
+id & INT, PK, AUTO\_INCREMENT & Unique game record identifier \\
+user\_id & INT, FK $\to$ users(id) & Owning player \\
+difficulty & ENUM & \texttt{beginner} or \texttt{advanced} \\
+score & INT & Server-recomputed final score \\
+time\_taken & INT & Seconds survived (0--120) \\
+cells\_revealed & INT & Number of safe cells revealed \\
+hints\_used & INT & Number of hints used (0--3) \\
+created\_at & DATETIME & Result submission timestamp \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Relationships}
+The relationship between \texttt{users} and \texttt{game\_results} is a
+standard one-to-many relationship: one user can accumulate many game
+records over time, so \texttt{user\_id} is stored as a foreign key on the
+\texttt{game\_results} side.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=3cm]
+    \tikzstyle{entity} = [rectangle, draw=black, thick, fill=blue!8,
+        text width=3.2cm, align=center, minimum height=1cm]
+    \node (users) [entity] {users};
+    \node (results) [entity, right=of users] {game\_results};
+    \draw [-{Latex[length=2mm]}, thick] (users) -- node[above] {1 -- *} (results);
+\end{tikzpicture}
+\caption{Entity relationship between \texttt{users} and \texttt{game\_results}.}
+\label{fig:er-diagram}
+\end{figure}
+
+\section{Important Constraints}
+\begin{itemize}[nosep]
+    \item Foreign key: \texttt{game\_results.user\_id} references
+    \texttt{users.id}.
+    \item Unique constraints on \texttt{users.username} and
+    \texttt{users.email} prevent duplicate accounts.
+    \item ENUM constraint on \texttt{game\_results.difficulty} restricts the
+    column to exactly \texttt{beginner} or \texttt{advanced}.
+    \item An index is defined on \texttt{game\_results.user\_id} (and on
+    \texttt{score} for leaderboard ordering) to support efficient history
+    and ranking queries.
+\end{itemize}
+
+\section{Schema Evolution}
+An early version of the schema included a \texttt{result} column recording
+a win/loss outcome, consistent with a classic ``clear the board'' win
+condition. When the game was redesigned as a timed survival mode
+(Section~\textit{Survival Mode and the Absence of a Win Condition},
+Chapter~\ref{ch:game-design}), this column was no longer meaningful and was
+removed via \texttt{migration-remove-win-condition.sql}, since a completed
+game is now fully described by its difficulty, time survived, cells
+revealed, and hints used.

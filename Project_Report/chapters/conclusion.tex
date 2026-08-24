@@ -1,0 +1,20 @@
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+This report has described the design and implementation of a web-based
+Minesweeper application built with a React/Vite frontend, a procedural PHP
+backend, and a MySQL database. The project's central technical
+contribution is the clear separation between a fully client-side game
+engine -- covering first-click safety, an iterative flood-fill reveal,
+flagging, chording, hints, a shield ability, and a fixed-time survival
+mode -- and a server that never trusts the client's own account of a
+completed game, instead independently recomputing and bounds-checking the
+score before it is persisted or shown on the leaderboard. Beyond gameplay,
+the system provides session-based authentication, a personal statistics
+dashboard, full game history, and a global leaderboard, all validated
+through a structured set of manual functional and security test cases.
+While the system has room to grow, particularly around CSRF protection,
+a stronger replay defense, and unifying the duplicated difficulty
+configuration, it fulfils its stated objective of pairing a responsive,
+client-driven Minesweeper experience with a server that remains the
+authoritative source of truth for every stored result.

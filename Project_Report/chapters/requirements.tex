@@ -1,0 +1,103 @@
+\chapter{Requirements Analysis}
+\label{ch:requirements}
+
+\section{Functional Requirements}
+The functional requirements below are derived directly from the behaviour
+implemented in the source code.
+
+\begin{enumerate}[nosep]
+    \item The system shall allow a new user to register with a username
+    (3--50 characters), an email address, and a password of at least 6
+    characters, confirmed twice.
+    \item The system shall reject registration when the supplied email is
+    not a valid email address, or when the username or email is already in
+    use.
+    \item The system shall hash passwords with \texttt{password\_hash()}
+    before storing them, and never store plaintext passwords.
+    \item The system shall allow a registered user to log in with their
+    email and password, verified with \texttt{password\_verify()}, and shall
+    regenerate the session ID on successful login.
+    \item The system shall allow a logged-in user to log out, which clears
+    and destroys the server-side session.
+    \item The system shall allow a logged-in user to start a game at one of
+    two difficulties: Beginner ($9\times9$, 10 mines) or Advanced
+    ($16\times16$, 40 mines).
+    \item The system shall guarantee that the first cell revealed by the
+    player, and all of its immediate neighbours, never contain a mine.
+    \item The system shall reveal a cascade of adjacent zero-value cells
+    automatically when a zero-adjacency cell is revealed (flood reveal).
+    \item The system shall allow the player to flag and unflag unrevealed
+    cells, up to the total mine count for the active difficulty.
+    \item The system shall allow the player to chord on a revealed numbered
+    cell when the number of adjacent flags equals its adjacent mine count,
+    automatically revealing the remaining unflagged neighbours.
+    \item The system shall allow the player up to 3 hints per game, each
+    highlighting a random unrevealed, non-mine cell for 3 seconds.
+    \item The system shall grant the player exactly one shield per game,
+    which, once activated, prevents the next mine reveal from ending the
+    game.
+    \item The system shall end the game when the player reveals a mine
+    (without an active shield) or when the 120-second timer reaches zero,
+    and shall reveal all mines at that point.
+    \item The system shall automatically submit the completed game's
+    metrics (difficulty, time taken, cells revealed, hints used) to the
+    backend once, and shall not re-submit the same completed game.
+    \item The system shall recompute the score on the server from the
+    submitted metrics rather than accept a client-supplied score, and shall
+    reject metric values that fall outside the valid range for the given
+    difficulty.
+    \item The system shall reject a duplicate submission of the same result
+    signature (user, difficulty, time, cells, hints) received within 10
+    seconds of the previous one.
+    \item The system shall display, for a logged-in user: personal
+    statistics (games played, high score, average score, longest survival,
+    most cells revealed), a history of up to 200 past games, and a global
+    top-10 leaderboard, each filterable by difficulty.
+\end{enumerate}
+
+\section{Non-Functional Requirements}
+\begin{itemize}[nosep]
+    \item \textbf{Security} -- passwords must never be stored in plaintext;
+    all SQL queries that include user input must use PDO prepared
+    statements; session cookies must be HTTP-only; cross-origin requests
+    must be restricted to an explicit allow-list of origins.
+    \item \textbf{Data Integrity} -- the \texttt{users} table must guarantee
+    unique usernames and unique email addresses; every stored game result
+    must be linked to a valid user via a foreign key.
+    \item \textbf{Usability} -- the interface should allow a player to start
+    a game, understand their remaining time, mines, flags, and score, and
+    review a completed game's outcome, without external instructions.
+    \item \textbf{Maintainability} -- difficulty parameters (grid size, mine
+    count) should be defined in a single, centralized configuration object
+    on the frontend rather than duplicated across components.
+\end{itemize}
+
+\section{User Requirements}
+A player needs an account, a way to start and play a timed game at a chosen
+difficulty, visible feedback on their current score and remaining time and
+mines, a way to review their past results, and a way to compare their best
+scores against other players.
+
+\section{Requirements Traceability}
+Table~\ref{tab:req-trace} maps a representative subset of the functional
+requirements above to the test cases used to validate them in
+Chapter~\ref{ch:testing}.
+
+\begin{table}[h]
+\centering
+\caption{Representative requirements-to-test-case mapping.}
+\label{tab:req-trace}
+\begin{tabular}{@{}p{2.2cm}p{9cm}p{1.5cm}@{}}
+\toprule
+\textbf{Req.\ \#} & \textbf{Requirement} & \textbf{Test ID} \\
+\midrule
+FR-3  & Password hashing on registration & T-2 \\
+FR-7  & First-click safety & T-4 \\
+FR-8  & Flood-fill cascade & T-5 \\
+FR-10 & Chording precondition & T-6 \\
+FR-12 & Shield blocks next mine reveal & T-7 \\
+FR-15 & Server-side score recomputation & T-9 \\
+FR-16 & Duplicate-submission rejection & T-10 \\
+\bottomrule
+\end{tabular}
+\end{table}

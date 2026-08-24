@@ -1,0 +1,23 @@
+\chapter{Future Enhancements}
+\label{ch:future}
+
+\begin{itemize}[nosep]
+    \item \textbf{CSRF tokens} on all state-changing POST endpoints.
+    \item \textbf{Stronger replay defense}, such as a server-issued,
+    single-use game session token that must accompany a score submission,
+    replacing the current MD5-signature heuristic.
+    \item \textbf{Password reset} via a time-limited emailed reset link.
+    \item \textbf{Single source of truth for difficulty configuration},
+    e.g.\ served from the backend (or database) and consumed by the
+    frontend, instead of being duplicated in two places.
+    \item \textbf{Additional difficulties or custom board sizes}, allowing
+    players to configure grid dimensions and mine density directly.
+    \item \textbf{Leaderboard pagination} beyond the current top-10 view.
+    \item \textbf{Production-hardened session cookies}, enabling the
+    \texttt{secure} flag once served over HTTPS.
+    \item \textbf{Rate limiting} on authentication endpoints to mitigate
+    brute-force login attempts.
+\end{itemize}
+
+These items are proposed improvements only; none of them are implemented in
+the current version of the application described in this report.

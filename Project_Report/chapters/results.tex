@@ -1,0 +1,41 @@
+\chapter{Results and Discussion}
+\label{ch:results}
+
+The completed application successfully implements a browser-playable
+Minesweeper game with persistent accounts, a global leaderboard, personal
+statistics, and game history, on top of a game engine that runs entirely on
+the client. In its current form, the system:
+
+\begin{itemize}[nosep]
+    \item Correctly guarantees a safe first click and its neighbourhood on
+    every new game, regardless of difficulty.
+    \item Correctly cascades reveals through zero-adjacency regions using an
+    iterative, non-recursive flood-fill, avoiding recursion-depth concerns
+    on the larger $16\times16$ Advanced board.
+    \item Supports chording and a single-use shield ability as additional
+    layers of player strategy beyond classic reveal/flag play.
+    \item Enforces a strict separation between client-side gameplay and
+    server-side score authority: the score shown to the player during play
+    is never the value trusted for the leaderboard, which is instead
+    recomputed and bounds-checked independently by \texttt{save-score.php}.
+    \item Presents personal statistics, a full game history, and a global
+    leaderboard, each filterable by difficulty, giving the player both
+    short-term feedback and long-term progress tracking.
+\end{itemize}
+
+The decision to implement the game engine as a set of pure, testable
+functions (\texttt{minesweeper.js}), separate from the React state
+management in \texttt{useMinesweeper.js}, kept the core algorithms
+(first-click safety, flood-fill, chording, scoring) independent of the UI
+framework and straightforward to reason about and validate directly, as
+reflected in the test cases in Chapter~\ref{ch:testing}. Likewise, treating
+the client-computed score as untrusted input and recomputing it
+server-side, rather than simply persisting whatever the client reports,
+directly addresses the score-integrity problem identified in the
+Introduction (Chapter~\ref{ch:introduction}).
+
+The use of a single-page React frontend against a lightweight,
+framework-free procedural PHP API kept the backend small and easy to audit,
+while still demonstrating a complete client-server-database pipeline with
+real authentication, authorization, and data-integrity concerns, which
+suited the goals of the project.

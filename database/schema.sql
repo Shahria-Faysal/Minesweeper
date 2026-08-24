@@ -1,8 +1,3 @@
--- Minesweeper Web Application
--- Database schema for Phase 1
---
--- Import this file in phpMyAdmin (or via `mysql -u root -p < schema.sql`)
--- to create the database and its tables.
 
 CREATE DATABASE IF NOT EXISTS minesweeper_db
   CHARACTER SET utf8mb4
@@ -12,7 +7,6 @@ USE minesweeper_db;
 
 -- ------------------------------------------------------
 -- users
--- Stores registered player accounts.
 -- ------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
     id         INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

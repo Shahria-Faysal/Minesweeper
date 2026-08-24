@@ -1,0 +1,27 @@
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+This report documents the design, implementation, and evaluation of a web-based
+Minesweeper game built as a full-stack, single-page application. The frontend is
+implemented in React with Vite and communicates with a procedural PHP backend
+over a JSON-based API, using PDO prepared statements against a MySQL database
+for persistent storage. Unlike traditional Minesweeper implementations, the game
+does not track a ``clear the board'' win condition; instead, it is played as a
+timed survival mode in which the player attempts to reveal as many safe cells as
+possible before either clicking a mine or the two-minute countdown expires. The
+game engine -- including deterministic-feeling first-click safety, an iterative
+flood-fill reveal algorithm, chording, a random-cell hint system, and a single-use
+shield ability -- runs entirely on the client. The backend does not participate in
+gameplay; its role is limited to user authentication (registration, login, and
+session-based authorization) and to independently revalidating and persisting the
+score of a completed game, so that a client cannot submit a fabricated result.
+This report covers the system's requirements, the client-side game algorithms in
+detail, the overall software architecture, the database schema, the implementation
+of the frontend and backend, the security mechanisms applied (including
+server-side score recomputation and duplicate-submission prevention), the major
+user-facing features, the testing strategy used to validate the system, and the
+project's known limitations and possible future improvements.
+
+\vspace{1em}
+\noindent \textbf{Keywords:} Minesweeper, Web Application, React, Vite, PHP,
+MySQL, Client-Side Game Logic, Session Authentication, Score Validation.

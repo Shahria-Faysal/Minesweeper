@@ -1,14 +1,4 @@
 <?php
-/**
- * Reusable authentication helpers.
- *
- * Requires that config/cors.php has already been included (it starts
- * the session). Later endpoints (save-score.php, history.php,
- * stats.php, etc.) will call require_login() at the top of the file
- * to reject any request that doesn't have a valid session — the
- * user's identity always comes from $_SESSION['user_id'], never from
- * anything the client sends in the request body.
- */
 
 /**
  * Returns the logged-in user's id, or null if nobody is logged in.

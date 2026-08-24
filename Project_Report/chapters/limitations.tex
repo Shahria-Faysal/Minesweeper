@@ -1,0 +1,32 @@
+\chapter{Limitations}
+\label{ch:limitations}
+
+\begin{itemize}[nosep]
+    \item \textbf{No CSRF protection} -- state-changing POST requests
+    (e.g.\ \texttt{save-score.php}, \texttt{logout.php}) do not carry a CSRF
+    token, relying instead on the CORS origin allow-list and SameSite
+    cookie policy as the primary cross-site defenses.
+    \item \textbf{Heuristic duplicate-submission signature} -- the
+    duplicate-submission check (Section~\ref{sec:score-validation}) uses an
+    MD5 digest of the submitted metrics and a 10-second window rather than a
+    cryptographically strong, single-use nonce; a sufficiently patient or
+    varied replay could still evade it.
+    \item \textbf{Development-mode cookie configuration} -- the session
+    cookie's \texttt{secure} flag is currently \texttt{false}, appropriate
+    for local HTTP development but not for a production HTTPS deployment.
+    \item \textbf{Duplicated difficulty configuration} -- the grid size and
+    mine count for each difficulty are defined independently on the
+    frontend (\texttt{DIFFICULTIES}) and as validation bounds on the backend
+    (\texttt{validate\_metrics()}), rather than from a single shared source
+    of truth, so the two must be kept manually in sync.
+    \item \textbf{No password reset flow} -- a user who forgets their
+    password has no self-service recovery mechanism.
+    \item \textbf{Leaderboard scope} -- the leaderboard displays a fixed
+    top-10 list without pagination.
+    \item \textbf{No rate limiting} -- login and registration endpoints do
+    not throttle repeated requests, leaving them potentially susceptible to
+    brute-force attempts.
+    \item \textbf{No formal foreign-key-backed role separation} -- since
+    there is only one user role, this is not currently a concern, but it is
+    noted as a constraint on any future addition of privileged accounts.
+\end{itemize}

@@ -1,23 +1,4 @@
 <?php
-/**
- * CORS + session bootstrap.
- *
- * Every endpoint that needs to know who is logged in (or that the
- * browser will call with fetch()) should require this file FIRST,
- * before any other output or header.
- *
- * Why this is needed:
- * React runs on http://localhost:5173 (the Vite dev server) and PHP
- * runs on a different origin, e.g. http://localhost/minesweeper/backend.
- * Different port = different "origin" as far as the browser is
- * concerned, so this is a cross-origin request. For the PHP session
- * cookie to be sent back and forth, three things all have to agree:
- *   1. PHP must allow that exact origin (not "*") via
- *      Access-Control-Allow-Origin.
- *   2. PHP must send Access-Control-Allow-Credentials: true.
- *   3. React's fetch() calls must use `credentials: "include"`.
- */
-
 // ---- 1 & 2: CORS headers -------------------------------------------------
 
 // Vite's dev server defaults to port 5173 but falls back to 5174 (or

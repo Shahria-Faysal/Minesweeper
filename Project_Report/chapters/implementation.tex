@@ -1,0 +1,102 @@
+\chapter{Implementation}
+\label{ch:implementation}
+
+\section{Frontend Implementation}
+The frontend is built with React and bundled with Vite, using plain
+JavaScript (no TypeScript) and component-scoped CSS. No external UI
+component framework is used for the game board itself; the board is
+rendered as a CSS grid of cell components, each responding to left-click
+(reveal), right-click (flag), and, on an already-revealed numbered cell,
+click-again (chord).
+
+\section{Backend Implementation}
+The backend is written in procedural PHP, without a framework, as a
+collection of standalone endpoint scripts plus shared includes for the
+database connection and authentication helpers. Unlike a typical
+\texttt{mysqli}-based implementation, database access uses PHP's PDO
+extension with prepared statements throughout, so that every query
+involving user-supplied data is parameterized.
+
+\section{API Endpoints}
+Table~\ref{tab:api-endpoints} summarises the backend endpoints exposed by
+the application.
+
+\begin{table}[h]
+\centering
+\caption{Summary of backend API endpoints.}
+\label{tab:api-endpoints}
+\begin{tabular}{@{}p{3.4cm}p{1.6cm}p{1.8cm}p{6.5cm}@{}}
+\toprule
+\textbf{Endpoint} & \textbf{Method} & \textbf{Auth} & \textbf{Purpose} \\
+\midrule
+register.php & POST & No & Create a new user account \\
+login.php & POST & No & Authenticate and start a session \\
+logout.php & POST & Yes & Destroy the current session \\
+save-score.php & POST & Yes & Recompute and persist a completed game's result \\
+leaderboard.php & GET & Yes & Return the top scores, optionally filtered by difficulty \\
+history.php & GET & Yes & Return the logged-in user's past games \\
+stats.php & GET & Yes & Return the logged-in user's aggregate statistics \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Representative Frontend Code: API Wrapper}
+\begin{lstlisting}[language=JavaScript, caption={Simplified fetch wrapper (\texttt{services/api.js}).}, label={lst:api-js}]
+const API_BASE = import.meta.env.VITE_API_URL;
+
+export async function apiRequest(endpoint, options = {}) {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  });
+  const data = await response.json();
+  if (!response.ok || !data.success) {
+    throw new Error(data.message || "Request failed");
+  }
+  return data;
+}
+\end{lstlisting}
+
+\section{Representative Backend Code: Score Submission Endpoint}
+\texttt{save-score.php} is the most security-relevant endpoint in the
+system, since it is the only point at which client-reported gameplay
+metrics are converted into a persisted, leaderboard-visible score. Its
+validation logic is described fully in Section~\ref{sec:score-validation}
+of Chapter~\ref{ch:security}; a simplified outline is shown below.
+
+\begin{lstlisting}[language=PHP, caption={Simplified score submission endpoint (\texttt{save-score.php}).}, label={lst:save-score}]
+<?php
+require_once "includes/db.php";
+require_once "includes/auth.php";
+require_login();
+
+$input = json_decode(file_get_contents("php://input"), true);
+$difficulty = $input["difficulty"];
+$timeTaken = (int) $input["time_taken"];
+$cellsRevealed = (int) $input["cells_revealed"];
+$hintsUsed = (int) $input["hints_used"];
+
+// Bound-check against the known limits for this difficulty
+validate_metrics($difficulty, $timeTaken, $cellsRevealed, $hintsUsed);
+
+// Reject if an identical result was submitted in the last 10 seconds
+reject_if_duplicate($userId, $difficulty, $timeTaken, $cellsRevealed, $hintsUsed);
+
+// Recompute the score server-side; never trust a client-supplied score
+$score = max(0, $cellsRevealed * 10 - $hintsUsed * 50);
+
+$stmt = $pdo->prepare(
+  "INSERT INTO game_results (user_id, difficulty, score, time_taken, cells_revealed, hints_used)
+   VALUES (?, ?, ?, ?, ?, ?)"
+);
+$stmt->execute([$userId, $difficulty, $score, $timeTaken, $cellsRevealed, $hintsUsed]);
+\end{lstlisting}
+
+\section{Configuration Management}
+Difficulty parameters are defined once on the frontend in the
+\texttt{DIFFICULTIES} configuration object (grid size and mine count) and
+independently on the backend as the bounds used by
+\texttt{validate\_metrics()} (maximum safe cells per difficulty). This
+duplication -- rather than a single shared source of truth -- is noted as a
+maintainability limitation in Chapter~\ref{ch:limitations}.

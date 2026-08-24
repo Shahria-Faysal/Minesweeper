@@ -1,16 +1,4 @@
 <?php
-/**
- * POST /save-score.php
- * Body (JSON): { difficulty, score, time_taken, cells_revealed, hints_used }
- *
- * There is no win condition, so there is no "result" field — every
- * saved game just represents how far the player got (cells revealed
- * and time survived) before hitting a mine.
- *
- * SECURITY: the user is identified ONLY by $_SESSION['user_id'] —
- * never by anything in the request body. React never sends a
- * user_id, and even if it did, this file would ignore it.
- */
 
 require_once __DIR__ . '/config/cors.php';
 require_once __DIR__ . '/config/db.php';
@@ -84,7 +72,7 @@ $hintsUsed     = (int) $hintsUsed;
 // request body. Score rewards progress (cells revealed) and survival
 // time, minus a penalty per hint. This makes an inflated/faked score
 // (e.g. edited in devtools) impossible rather than just "detected."
-$score = max(0, ($cellsRevealed * 10) + ($timeTaken * 2) - ($hintsUsed * 50));
+$score = max(0, ($cellsRevealed * 10) - ($hintsUsed * 50));
 
 // ---- Duplicate-submission guard --------------------------------------
 //

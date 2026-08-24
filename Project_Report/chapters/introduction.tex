@@ -1,0 +1,73 @@
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Background}
+Minesweeper is a classic single-player logic puzzle in which a player must
+uncover the safe cells of a grid while avoiding hidden mines, using numeric
+clues that indicate how many mines are adjacent to a revealed cell. As a
+well-understood game with clear, self-contained rules, it is a natural
+candidate for demonstrating full-stack web development skills: it requires a
+non-trivial client-side algorithm (board generation and cascading reveal), a
+persistent notion of user identity and history, and a backend capable of
+storing and ranking results in a way that resists tampering by the client.
+
+\section{Problem Statement}
+Implementing an online Minesweeper game that supports user accounts, score
+tracking, and a public leaderboard raises a specific integrity problem: if the
+game logic and the final score are both computed on the client, a malicious
+user could submit an arbitrarily inflated score directly to the backend
+without ever actually playing a valid game. A trustworthy implementation must
+therefore separate the concerns of \emph{gameplay} (which can reasonably run
+in the browser for responsiveness) from \emph{score validation} (which must be
+authoritative on the server).
+
+\section{Motivation}
+The motivation behind this project was to build a complete, working
+Minesweeper web application that goes beyond a purely client-side game by
+adding user accounts, persistent game history, a global leaderboard, and
+personal statistics -- while addressing the score-integrity problem described
+above through explicit server-side validation. The project also served as a
+practical exercise in structuring a React single-page application (contexts,
+hooks, and a services layer) alongside a lightweight, framework-free PHP
+JSON API.
+
+\section{Proposed Solution}
+The application separates the game into two layers. On the client, a pure
+functional module (\texttt{minesweeper.js}) implements board generation with
+first-click safety, an iterative flood-fill reveal, flag toggling, chording,
+a limited hint system, and score calculation. A custom React hook
+(\texttt{useMinesweeper}) drives this module and manages the game's timer and
+state transitions. On the server, PHP endpoints handle registration, login,
+and logout using PHP sessions, and a dedicated \texttt{save-score.php}
+endpoint independently recomputes the score from the submitted raw metrics
+(cells revealed, time taken, hints used) rather than trusting a
+client-supplied score value, before persisting the result to MySQL.
+
+\section{Project Objectives}
+The specific objectives of this project were to:
+\begin{itemize}[nosep]
+    \item Implement a client-side Minesweeper game engine with first-click
+    safety, flood-fill reveal, flagging, chording, hints, and a shield
+    ability, within a fixed-time survival mode.
+    \item Build a user account system with registration, login, logout, and
+    session-based authorization.
+    \item Persist completed game results to a relational database and expose
+    them through a personal history view, a personal statistics dashboard,
+    and a global leaderboard.
+    \item Ensure that submitted scores cannot be trusted at face value from
+    the client, by recomputing and bounding them on the server before
+    storage.
+    \item Apply standard web security practices, including password hashing,
+    session-fixation mitigation, restrictive CORS configuration, and
+    parameterized SQL queries.
+\end{itemize}
+
+\section{Scope}
+The application supports exactly two difficulty levels -- Beginner
+($9\times9$ grid, 10 mines) and Advanced ($16\times16$ grid, 40 mines) -- and
+a single game mode: a 120-second survival mode in which the game ends only
+when a mine is revealed or the timer reaches zero. There is no ``you cleared
+the board'' win condition. The system supports a single user role (registered
+player); there is no administrator role. Features such as password reset,
+real-time multiplayer, and push notifications are not implemented and are
+discussed as possible future work in Chapter~\ref{ch:future}.

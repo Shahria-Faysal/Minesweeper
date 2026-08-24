@@ -1,14 +1,4 @@
 <?php
-/**
- * Database connection for the Minesweeper backend.
- *
- * Uses PDO with prepared statements. This file only opens the
- * connection — it does not contain any endpoint logic.
- *
- * Any script that needs the database should do:
- *     require_once __DIR__ . '/config/db.php';
- * and then use the $pdo variable.
- */
 
 $DB_HOST = 'localhost';
 $DB_NAME = 'minesweeper_db';
