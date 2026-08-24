@@ -30,6 +30,7 @@ function Game() {
     restart,
     revealCellAt,
     flagCellAt,
+    chordCellAt,
     useHint,
   } = useMinesweeper();
 
@@ -114,6 +115,7 @@ function Game() {
         <div className="status-bar">
           <div>DIFFICULTY: <span>{DIFFICULTIES[difficulty].label.toUpperCase()}</span></div>
           <div>MINES: <span>{minesRemaining}</span></div>
+          <div>🚩 FLAGS: <span>{DIFFICULTIES[difficulty].mines - minesRemaining}</span></div>
           <div>TIME: <span>{formatTime(timeElapsed)}</span></div>
           <div>SCORE: <span>{score}</span></div>
         </div>
@@ -124,6 +126,7 @@ function Game() {
           hintCell={hintCell}
           onReveal={revealCellAt}
           onFlag={flagCellAt}
+          onChord={chordCellAt}
         />
       </div>
 

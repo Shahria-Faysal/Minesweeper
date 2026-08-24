@@ -1,6 +1,6 @@
 import Cell from "./Cell";
 
-function MinesweeperBoard({ board, gameStatus, hintCell, onReveal, onFlag }) {
+function MinesweeperBoard({ board, gameStatus, hintCell, onReveal, onFlag, onChord }) {
   const columnCount = board[0].length;
 
   return (
@@ -13,6 +13,7 @@ function MinesweeperBoard({ board, gameStatus, hintCell, onReveal, onFlag }) {
           isHinted={hintCell?.row === cell.row && hintCell?.col === cell.col}
           onReveal={onReveal}
           onFlag={onFlag}
+          onChord={onChord}
         />
       ))}
     </div>

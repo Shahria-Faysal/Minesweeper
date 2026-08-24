@@ -12,6 +12,7 @@ import {
   countRevealedSafeCells,
   findHintCell,
   calculateScore,
+  chordCell,
 } from "../utils/minesweeper";
 import { saveGameResult } from "../services/gameService";
 
@@ -147,7 +148,37 @@ export function useMinesweeper(initialDifficulty = "beginner") {
 
   function flagCellAt(row, col) {
     if (gameStatus === "lost") return;
-    setBoard((prevBoard) => toggleFlag(prevBoard, row, col));
+    // Pass the mine count so toggleFlag can enforce the flag-count cap
+    setBoard((prevBoard) => toggleFlag(prevBoard, row, col, config.mines));
+  }
+
+  /**
+   * Chording: called when the player left-clicks an already-revealed
+   * numbered cell. Delegates to chordCell (pure logic) and then
+   * mirrors the mine-reveal path from revealCellAt if the result
+   * contains a newly-uncovered mine.
+   */
+  function chordCellAt(row, col) {
+    if (gameStatus !== "playing") return;
+
+    clearHintHighlight();
+
+    const nextBoard = chordCell(board, row, col);
+    // chordCell returns the original board reference unchanged when no
+    // chording happened, so we can cheaply detect a no-op.
+    if (nextBoard === board) return;
+
+    // Check if chording revealed any mine
+    const hitMine = nextBoard
+      .flat()
+      .some((cell) => cell.isMine && cell.isRevealed);
+
+    if (hitMine) {
+      setBoard(revealAllMines(nextBoard));
+      setGameStatus("lost");
+    } else {
+      setBoard(nextBoard);
+    }
   }
 
   /**
@@ -197,6 +228,7 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     restart: () => resetGame(),
     revealCellAt,
     flagCellAt,
+    chordCellAt,
     useHint,
   };
 }

@@ -40,7 +40,7 @@ export function createEmptyBoard(rows, cols) {
 // Returns the (up to 8) cells surrounding (row, col) — the classic
 // Minesweeper neighborhood, skipping the cell itself and anything
 // off the edge of the grid.
-function getNeighbors(board, row, col) {
+export function getNeighbors(board, row, col) {
   const neighbors = [];
   for (let deltaRow = -1; deltaRow <= 1; deltaRow++) {
     for (let deltaCol = -1; deltaCol <= 1; deltaCol++) {
@@ -158,18 +158,68 @@ export function revealAllMines(board) {
   return board.map((r) => r.map((cell) => (cell.isMine ? { ...cell, isRevealed: true } : cell)));
 }
 
-// Right-click handler logic: only hidden cells can be flagged.
-export function toggleFlag(board, row, col) {
+// Right-click handler logic: only hidden, non-revealed cells can be
+// flagged. mineCount enforces the upper limit — you cannot place
+// more flags than there are mines.
+export function toggleFlag(board, row, col, mineCount) {
   const newBoard = board.map((r) => r.map((cell) => ({ ...cell })));
   const cell = newBoard[row][col];
-  if (!cell.isRevealed) {
-    cell.isFlagged = !cell.isFlagged;
+  if (cell.isRevealed) return newBoard; // revealed cells can't be flagged
+
+  if (cell.isFlagged) {
+    // Always allow removal of a flag
+    cell.isFlagged = false;
+  } else {
+    // Only place a flag if we haven't hit the mine-count cap
+    if (countFlags(board) < mineCount) {
+      cell.isFlagged = true;
+    }
   }
   return newBoard;
 }
 
 export function countFlags(board) {
   return board.flat().filter((cell) => cell.isFlagged).length;
+}
+
+/**
+ * Chording: when the player clicks an already-revealed numbered cell,
+ * count adjacent flags. If that count equals the cell's number, reveal
+ * every neighbouring cell that is not flagged and not already revealed.
+ *
+ * Returns the new board state. If the conditions for chording aren't
+ * met (cell not revealed, cell has no number, or flag count doesn't
+ * match) the original board is returned unchanged.
+ *
+ * If chording uncovers a mine (wrong flag placement), the caller is
+ * responsible for triggering the normal game-over path — this function
+ * simply reveals the cell and lets the mine show.
+ */
+export function chordCell(board, row, col) {
+  const cell = board[row][col];
+
+  // Only chord a revealed cell with a number
+  if (!cell.isRevealed || cell.adjacentMines === 0 || cell.isMine) {
+    return board;
+  }
+
+  const neighbors = getNeighbors(board, row, col);
+  const adjacentFlagCount = neighbors.filter((n) => n.isFlagged).length;
+
+  // Flag count must match the number on the tile
+  if (adjacentFlagCount !== cell.adjacentMines) {
+    return board;
+  }
+
+  // Reveal every neighbour that is neither flagged nor already revealed
+  let workingBoard = board;
+  neighbors
+    .filter((n) => !n.isFlagged && !n.isRevealed)
+    .forEach((n) => {
+      workingBoard = revealCell(workingBoard, n.row, n.col);
+    });
+
+  return workingBoard;
 }
 
 // There is no win condition — the only way a game ends is by

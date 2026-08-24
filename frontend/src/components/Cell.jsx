@@ -1,13 +1,26 @@
-function Cell({ cell, gameStatus, isHinted, onReveal, onFlag }) {
+function Cell({ cell, gameStatus, isHinted, onReveal, onFlag, onChord }) {
   const { row, col, isRevealed, isFlagged, isMine, adjacentMines } = cell;
 
   function handleClick() {
-    onReveal(row, col);
+    if (isRevealed) {
+      // Chord: clicking a numbered revealed cell attempts chording.
+      // Empty cells (adjacentMines === 0) and mine cells do nothing.
+      if (!isMine && adjacentMines > 0) {
+        onChord(row, col);
+      }
+    } else if (!isFlagged) {
+      // Normal reveal: only hidden, unflagged cells
+      onReveal(row, col);
+    }
+    // Flagged hidden cells: do nothing on left-click
   }
 
   function handleContextMenu(event) {
-    event.preventDefault(); // stop the browser's right-click menu
-    onFlag(row, col);
+    event.preventDefault(); // always stop the browser's right-click menu on board cells
+    if (!isRevealed) {
+      onFlag(row, col);
+    }
+    // Right-clicking a revealed cell does nothing
   }
 
   const isGameOver = gameStatus === "lost";
@@ -44,7 +57,6 @@ function Cell({ cell, gameStatus, isHinted, onReveal, onFlag }) {
       className={classNames}
       onClick={handleClick}
       onContextMenu={handleContextMenu}
-      disabled={isRevealed}
       aria-label={`Cell row ${row + 1}, column ${col + 1}`}
     >
       {content}

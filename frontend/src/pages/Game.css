@@ -201,6 +201,13 @@
   border-color: var(--border) !important;
 }
 
+/* Revealed numbered cells are clickable for chording — give them a
+   pointer cursor and a very subtle hover so players can discover it. */
+[class*="cell-number-"]:hover {
+  cursor: pointer;
+  filter: brightness(1.15);
+}
+
 .cell-mine {
   background: var(--mine-bg);
   border-color: var(--danger) !important;
