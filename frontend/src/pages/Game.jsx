@@ -118,8 +118,12 @@ function Game() {
           <div>DIFFICULTY: <span>{DIFFICULTIES[difficulty].label.toUpperCase()}</span></div>
           <div>MINES: <span>{minesRemaining}</span></div>
           <div>🚩 FLAGS: <span>{DIFFICULTIES[difficulty].mines - minesRemaining}</span></div>
-          <div>TIME: <span>{formatTime(timeElapsed)}</span></div>
           <div>SCORE: <span>{score}</span></div>
+        </div>
+
+        <div className={`countdown-display ${timeElapsed <= 30 ? "countdown-display--low" : ""}`}>
+          <span className="countdown-icon">⏱</span>
+          <span className="countdown-time">{formatTime(timeElapsed)}</span>
         </div>
 
         <MinesweeperBoard
