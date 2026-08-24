@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMinesweeper } from "../hooks/useMinesweeper";
-import { DIFFICULTIES } from "../utils/minesweeper";
+import { DIFFICULTIES, TIME_LIMIT_SECONDS } from "../utils/minesweeper";
 import { fetchStats } from "../services/gameService";
 import DifficultySelector from "../components/DifficultySelector";
 import MinesweeperBoard from "../components/MinesweeperBoard";
@@ -157,7 +157,7 @@ function Game() {
       <ResultModal
         gameStatus={gameStatus}
         score={score}
-        timeElapsed={timeElapsed}
+        timeElapsed={TIME_LIMIT_SECONDS - timeElapsed}
         cellsRevealed={cellsRevealed}
         hintsUsed={hintsUsed}
         saveStatus={saveStatus}

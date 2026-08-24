@@ -12,7 +12,8 @@ export const MAX_HINTS = 3;
 export const HINT_COST = 50;
 export const HINT_HIGHLIGHT_MS = 3000;
 export const POINTS_PER_CELL = 10;
-export const POINTS_PER_SECOND = 2;
+export const POINTS_PER_SECOND = 0;   // time no longer auto-inflates score
+export const TIME_LIMIT_SECONDS = 120; // 2-minute game cap
 
 /**
  * Builds a rows x cols grid of empty cells. No mines yet — mines are
@@ -242,8 +243,9 @@ export function findHintCell(board) {
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
-// Score rewards BOTH progress (cells safely revealed) and survival
-// time, minus a penalty per hint used. Floored at 0.
+// Score rewards progress (cells safely revealed) minus a penalty per
+// hint used. Time is no longer added — it was causing the score to
+// climb automatically without any player action. Floored at 0.
 export function calculateScore(cellsRevealed, timeElapsed, hintsUsed) {
   const rawScore =
     cellsRevealed * POINTS_PER_CELL + timeElapsed * POINTS_PER_SECOND - hintsUsed * HINT_COST;

@@ -13,6 +13,7 @@ import {
   findHintCell,
   calculateScore,
   chordCell,
+  TIME_LIMIT_SECONDS,
 } from "../utils/minesweeper";
 import { saveGameResult } from "../services/gameService";
 
@@ -33,7 +34,7 @@ export function useMinesweeper(initialDifficulty = "beginner") {
 
   const [board, setBoard] = useState(() => createEmptyBoard(config.rows, config.cols));
   const [gameStatus, setGameStatus] = useState("ready");
-  const [timeElapsed, setTimeElapsed] = useState(0);
+  const [timeElapsed, setTimeElapsed] = useState(TIME_LIMIT_SECONDS);
   const [hintsUsed, setHintsUsed] = useState(0);
   // The cell a hint most recently pointed at, so the UI can
   // highlight it — separate from `board`, since a hint does NOT
@@ -56,17 +57,29 @@ export function useMinesweeper(initialDifficulty = "beginner") {
   // resolves) can never fire a second save for the same result.
   const hasSavedRef = useRef(false);
 
-  // Timer only ticks while gameStatus === "playing". Cleans itself
-  // up whenever gameStatus changes (including to "lost") or the
-  // component unmounts.
+  // Timer counts down from TIME_LIMIT_SECONDS to 0 while gameStatus === "playing".
   useEffect(() => {
     if (gameStatus === "playing") {
       timerRef.current = setInterval(() => {
-        setTimeElapsed((seconds) => seconds + 1);
+        setTimeElapsed((seconds) => {
+          if (seconds <= 1) {
+            clearInterval(timerRef.current);
+            return 0;
+          }
+          return seconds - 1;
+        });
       }, 1000);
     }
     return () => clearInterval(timerRef.current);
   }, [gameStatus]);
+
+  // Triggers game loss when the countdown reaches 00:00.
+  useEffect(() => {
+    if (gameStatus === "playing" && timeElapsed === 0) {
+      setBoard((prevBoard) => revealAllMines(prevBoard));
+      setGameStatus("lost");
+    }
+  }, [timeElapsed, gameStatus]);
 
   // Clear any pending hint-highlight timeout on unmount.
   useEffect(() => {
@@ -74,9 +87,7 @@ export function useMinesweeper(initialDifficulty = "beginner") {
   }, []);
 
   // Fires exactly once per finished game: as soon as gameStatus
-  // becomes "lost", send the result to the backend. The backend
-  // determines WHO this result belongs to from the session cookie —
-  // this payload never includes a user id.
+  // becomes "lost", send the result to the backend.
   useEffect(() => {
     if (gameStatus !== "lost") return;
     if (hasSavedRef.current) return;
@@ -84,10 +95,12 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     hasSavedRef.current = true; // claim the save before the request even starts
     setSaveStatus("saving");
 
+    const timeSpent = TIME_LIMIT_SECONDS - timeElapsed;
+
     saveGameResult({
       difficulty,
-      score: calculateScore(countRevealedSafeCells(board), timeElapsed, hintsUsed),
-      timeTaken: timeElapsed,
+      score: calculateScore(countRevealedSafeCells(board), timeSpent, hintsUsed),
+      timeTaken: timeSpent,
       cellsRevealed: countRevealedSafeCells(board),
       hintsUsed,
     })
@@ -112,7 +125,7 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     setDifficulty(targetDifficulty);
     setBoard(createEmptyBoard(targetConfig.rows, targetConfig.cols));
     setGameStatus("ready");
-    setTimeElapsed(0);
+    setTimeElapsed(TIME_LIMIT_SECONDS);
     setHintsUsed(0);
     setShieldState("available"); // every new game gives the player one fresh shield
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -156,11 +169,18 @@ export function useMinesweeper(initialDifficulty = "beginner") {
 
     const nextBoard = revealCell(workingBoard, row, col);
     setBoard(nextBoard);
+    // Shield is a one-move token: if it was active when the player
+    // clicked this safe tile, consume it now. The mine-hit branch
+    // above already handles the mine case, so this covers the safe case.
+    if (shieldState === "active") {
+      setShieldState("used");
+    }
     // No win check — the game only ends by hitting a mine. If every
     // safe cell has been revealed, the only cells left ARE mines, so
     // the next click ends the game naturally without any special
     // case here.
   }
+
 
   function flagCellAt(row, col) {
     if (gameStatus === "lost") return;
@@ -224,7 +244,7 @@ export function useMinesweeper(initialDifficulty = "beginner") {
   const flagCount = countFlags(board);
   const minesRemaining = config.mines - flagCount;
   const cellsRevealed = countRevealedSafeCells(board);
-  const score = calculateScore(cellsRevealed, timeElapsed, hintsUsed);
+  const score = calculateScore(cellsRevealed, TIME_LIMIT_SECONDS - timeElapsed, hintsUsed);
   const hintsRemaining = MAX_HINTS - hintsUsed;
 
   /** Moves the shield from "available" to "active". No-ops otherwise. */
