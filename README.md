@@ -42,9 +42,15 @@ survival instead of speed-to-completion:
 score = (cells_revealed × 10) + (time_survived × 2) − (hints_used × 50)
 ```
 
+Each game has a **2-minute countdown timer**, starting at `02:00` and
+running down to `00:00`. If the timer reaches zero, the game ends and
+all mines are revealed. The saved `time_taken` value records how many
+seconds the player survived.
+
 Everywhere this touched:
 - **Game logic** — `checkWin()` removed; `gameStatus` only has
-  `"ready" | "playing" | "lost"`.
+  `"ready" | "playing" | "lost"`; the timer counts down from 120 seconds
+  and timeout ends the game.
 - **Result screen** — one unified "💣 GAME OVER" screen (was two).
 - **Dashboard** — Games Won/Lost, Win Rate, and win streaks removed
   (they don't mean anything without a win); replaced with Highest
