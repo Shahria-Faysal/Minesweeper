@@ -52,3 +52,19 @@ history and statistics are limited to the logged-in user.
 **Before running:** copy `frontend/.env.example` to `frontend/.env`
 and adjust `VITE_API_BASE_URL` if needed (falls back to
 `http://localhost/backend` otherwise).
+
+## Screenshots
+
+### Game Board
+![Minesweeper game board](Project_Report/figures/fig_game_board.png)
+
+### Dashboard
+![Minesweeper dashboard](Project_Report/figures/fig_dashboard_dark.png)
+
+### Profile
+![Minesweeper leaderboard](Project_Report/figures/fig_profile_dark.png)
+
+### Leaderboard
+![Minesweeper leaderboard](Project_Report/figures/fig_leaderboard.png)
+
+
