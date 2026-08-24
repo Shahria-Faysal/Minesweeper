@@ -42,6 +42,9 @@ export function useMinesweeper(initialDifficulty = "beginner") {
   // "idle" | "saving" | "saved" | "error" — lets the UI show
   // whether the finished game actually made it to the database.
   const [saveStatus, setSaveStatus] = useState("idle");
+  // Shield power-up: one per game. "available" → player can activate
+  // it; "active" → next mine click is blocked; "used" → spent.
+  const [shieldState, setShieldState] = useState("available");
 
   const timerRef = useRef(null);
   const hintTimeoutRef = useRef(null);
@@ -111,6 +114,7 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     setGameStatus("ready");
     setTimeElapsed(0);
     setHintsUsed(0);
+    setShieldState("available"); // every new game gives the player one fresh shield
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [difficulty]);
 
@@ -133,6 +137,18 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     }
 
     if (workingBoard[row][col].isMine) {
+      // Shield intercept: if the shield is active, absorb this mine
+      // click — no Game Over, mine stays hidden, shield becomes used.
+      if (shieldState === "active") {
+        setShieldState("used");
+        // workingBoard may have had mines placed on it this turn (first
+        // click), so we must persist that board even though we cancel
+        // the reveal. If mines were placed this tick, save the board.
+        if (gameStatus === "ready") {
+          setBoard(workingBoard);
+        }
+        return;
+      }
       setBoard(revealAllMines(revealCell(workingBoard, row, col)));
       setGameStatus("lost");
       return;
@@ -211,6 +227,13 @@ export function useMinesweeper(initialDifficulty = "beginner") {
   const score = calculateScore(cellsRevealed, timeElapsed, hintsUsed);
   const hintsRemaining = MAX_HINTS - hintsUsed;
 
+  /** Moves the shield from "available" to "active". No-ops otherwise. */
+  function activateShield() {
+    if (shieldState === "available") {
+      setShieldState("active");
+    }
+  }
+
   return {
     difficulty,
     config,
@@ -224,6 +247,8 @@ export function useMinesweeper(initialDifficulty = "beginner") {
     cellsRevealed,
     score,
     saveStatus,
+    shieldState,
+    activateShield,
     changeDifficulty: resetGame,
     restart: () => resetGame(),
     revealCellAt,

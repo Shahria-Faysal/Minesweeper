@@ -1,4 +1,4 @@
-.difficulty-selector {
+﻿.difficulty-selector {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1rem;
@@ -261,9 +261,78 @@
   color: var(--danger);
 }
 
+
 .modal-actions {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-top: 1.5rem;
+}
+
+/* Shield power-up panel */
+.shield-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.9rem;
+  font-weight: 700;
+  flex-wrap: wrap;
+}
+
+.shield-label {
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.shield-panel--available {
+  border-color: #00bcd4;
+}
+.shield-panel--available .shield-label strong {
+  color: #00bcd4;
+}
+
+.shield-panel--active {
+  border-color: #ffb300;
+  animation: shield-pulse 1.2s ease-in-out infinite;
+}
+.shield-panel--active .shield-label strong {
+  color: #ffb300;
+}
+
+@keyframes shield-pulse {
+  0%, 100% { box-shadow: 0 0 6px 1px rgba(255, 179, 0, 0.35); }
+  50%       { box-shadow: 0 0 14px 3px rgba(255, 179, 0, 0.65); }
+}
+
+.shield-panel--used {
+  border-color: var(--border);
+  opacity: 0.55;
+}
+.shield-panel--used .shield-label strong {
+  color: var(--text-muted);
+}
+
+.shield-btn {
+  min-width: 9rem;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.shield-panel--available .shield-btn {
+  border-color: #00bcd4;
+  color: #00bcd4;
+}
+.shield-panel--available .shield-btn:hover:not(:disabled) {
+  background: rgba(0, 188, 212, 0.12);
+}
+
+.shield-panel--active .shield-btn {
+  border-color: #ffb300;
+  color: #ffb300;
+  cursor: default;
 }

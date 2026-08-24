@@ -26,6 +26,8 @@ function Game() {
     cellsRevealed,
     score,
     saveStatus,
+    shieldState,
+    activateShield,
     changeDifficulty,
     restart,
     revealCellAt,
@@ -128,6 +130,28 @@ function Game() {
           onFlag={flagCellAt}
           onChord={chordCellAt}
         />
+
+        {/* Shield power-up panel */}
+        <div className={`shield-panel shield-panel--${shieldState}`}>
+          <span className="shield-label">
+            🛡 SHIELD:{" "}
+            <strong>
+              {shieldState === "available" && "READY"}
+              {shieldState === "active"    && "ACTIVE"}
+              {shieldState === "used"      && "USED"}
+            </strong>
+          </span>
+          <button
+            type="button"
+            className="btn shield-btn"
+            onClick={activateShield}
+            disabled={shieldState !== "available" || gameStatus === "lost"}
+          >
+            {shieldState === "available" && "Activate Shield"}
+            {shieldState === "active"    && "Shield Active"}
+            {shieldState === "used"      && "Shield Used"}
+          </button>
+        </div>
       </div>
 
       <ResultModal
